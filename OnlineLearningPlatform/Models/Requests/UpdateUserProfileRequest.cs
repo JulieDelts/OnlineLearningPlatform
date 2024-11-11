@@ -1,6 +1,6 @@
 ﻿namespace OnlineLearningPlatform.Models.Requests
 {
-    public class UpdateUserProfileREquest
+    public class UpdateUserProfileRequest
     {
         public string FirstName { get; set; }
 
