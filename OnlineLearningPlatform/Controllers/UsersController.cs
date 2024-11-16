@@ -22,9 +22,9 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<UserResponse>> GetUsers()
+        public ActionResult<List<ExtendedUserResponse>> GetUsers()
         {
-            List<UserResponse> users = new List<UserResponse>();
+            List<ExtendedUserResponse> users = new List<ExtendedUserResponse>();
             return Ok(users);
         }
 
