@@ -15,34 +15,46 @@ namespace OnlineLearningPlatform.Controllers
             return Ok(newCourseId);
         }
 
-        [HttpGet]
-        public ActionResult<List<ExtendedCourseResponse>> GetCourses()
-        {
-            var courses = new List<ExtendedCourseResponse>();
-            return Ok(courses);
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<CourseWithUsersResponse> GetCourseById([FromRoute] Guid id)
-        {
-            var course = new UserWithCoursesResponse();
-            return Ok(course);
-        }
-
-        [HttpPut("{id}")]
-        public ActionResult UpdateCourse([FromRoute] Guid id, [FromBody] UpdateCourseRequest request)
+        [HttpPost("{id}/enroll")]
+        public IActionResult Enroll([FromBody] EnrollmentManagementRequest request)
         {
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult DeleteCourse([FromRoute] Guid id)
+        [HttpGet]
+        public ActionResult<List<CourseResponse>> GetCourses()
+        {
+            var courses = new List<CourseResponse>();
+            return Ok(courses);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<ExtendedCourseResponse> GetCourseById([FromRoute] Guid id)
+        {
+            var course = new ExtendedCourseResponse();
+            return Ok(course);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateCourse([FromRoute] Guid id, [FromBody] UpdateCourseRequest request)
         {
             return NoContent();
         }
 
         [HttpPatch("{id}/deactivate")]
-        public ActionResult DeactivateCourse([FromRoute] Guid id)
+        public IActionResult DeactivateCourse([FromRoute] Guid id)
+        {
+            return NoContent();
+        }
+
+        [HttpDelete("{id}/disenroll")]
+        public IActionResult Disenroll([FromBody] EnrollmentManagementRequest request)
+        {
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCourse([FromRoute] Guid id)
         {
             return NoContent();
         }
