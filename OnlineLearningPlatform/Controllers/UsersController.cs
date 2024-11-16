@@ -16,39 +16,51 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult Login([FromBody] LoginRequest request)
+        public IActionResult Login([FromBody] LoginRequest request)
         {
             return Ok();
         }
 
         [HttpGet]
-        public ActionResult<List<ExtendedUserResponse>> GetUsers()
+        public ActionResult<List<UserResponse>> GetUsers()
         {
-            List<ExtendedUserResponse> users = new List<ExtendedUserResponse>();
+            List<UserResponse> users = new List<UserResponse>();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<UserWithCoursesResponse> GetUserById([FromRoute] Guid id)
+        public ActionResult<ExtendedUserResponse> GetUserById([FromRoute] Guid id)
         {
-            var user = new UserWithCoursesResponse();
+            var user = new ExtendedUserResponse();
             return Ok(user);
         }
 
-        [HttpPut("{id}")]
-        public ActionResult UpdateUserProfile([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
+        [HttpPut("{id}/profile")]
+        public IActionResult UpdateUserProfile([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
         {
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult DeleteUser([FromRoute] Guid id)
+        [HttpPatch("{id}/role")]
+        public IActionResult UpdateUserRole([FromRoute] Guid id, [FromBody] UpdateUserRoleRequest request)
+        {
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/password")]
+        public IActionResult UpdateUserPassword([FromRoute] Guid id, [FromBody] UpdateUserPasswordRequest request)
         {
             return NoContent();
         }
 
         [HttpPatch("{id}/deactivate")]
-        public ActionResult DeactivateUser([FromRoute] Guid id)
+        public IActionResult DeactivateUser([FromRoute] Guid id)
+        {
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteUser([FromRoute] Guid id)
         {
             return NoContent();
         }
