@@ -6,8 +6,6 @@
 
         public int NumberOfLessons { get; set; }
 
-        public bool IsStarted { get; set; }
-
         public List<UserResponse> Users { get; set; }
     }
 }
