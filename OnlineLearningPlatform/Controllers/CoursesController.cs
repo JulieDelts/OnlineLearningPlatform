@@ -16,9 +16,9 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<CourseResponse>> GetCourses()
+        public ActionResult<List<ExtendedCourseResponse>> GetCourses()
         {
-            var courses = new List<CourseResponse>();
+            var courses = new List<ExtendedCourseResponse>();
             return Ok(courses);
         }
 
