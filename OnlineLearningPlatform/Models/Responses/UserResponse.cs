@@ -1,4 +1,6 @@
-﻿namespace OnlineLearningPlatform.Models.Responses
+﻿using OnlineLearningPlatform.Core;
+
+namespace OnlineLearningPlatform.Models.Responses
 {
     public class UserResponse
     {
