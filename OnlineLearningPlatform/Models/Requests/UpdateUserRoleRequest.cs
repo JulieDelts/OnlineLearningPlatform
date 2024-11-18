@@ -1,4 +1,6 @@
-﻿namespace OnlineLearningPlatform.Models.Requests
+﻿using OnlineLearningPlatform.Core;
+
+namespace OnlineLearningPlatform.Models.Requests
 {
     public class UpdateUserRoleRequest
     {
