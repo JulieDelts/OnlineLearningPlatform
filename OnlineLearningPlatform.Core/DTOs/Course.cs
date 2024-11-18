@@ -15,6 +15,6 @@ namespace OnlineLearningPlatform.Core.DTOs
 
         public User Teacher { get; set; }
 
-        public List<Enrollment> Enrollments { get; set; }
+        public List<Enrollment>? Enrollments { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace OnlineLearningPlatform.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            return Ok();
+            return NoContent();
         }
 
         [HttpGet]

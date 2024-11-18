@@ -21,8 +21,8 @@ namespace OnlineLearningPlatform.Core.DTOs
 
         public bool IsDeactivated { get; set; }
 
-        public List<Course> TaughtCourses { get; set; }
+        public List<Course>? TaughtCourses { get; set; }
 
-        public List<Enrollment> Enrollments { get; set; }
+        public List<Enrollment>? Enrollments { get; set; }
     }
 }
