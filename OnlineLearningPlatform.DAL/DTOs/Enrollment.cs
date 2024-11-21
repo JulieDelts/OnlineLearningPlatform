@@ -1,5 +1,5 @@
 ﻿
-namespace OnlineLearningPlatform.Core.DTOs
+namespace OnlineLearningPlatform.DAL.DTOs
 {
     public class Enrollment
     {

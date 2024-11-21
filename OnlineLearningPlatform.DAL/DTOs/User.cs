@@ -1,5 +1,6 @@
-﻿
-namespace OnlineLearningPlatform.Core.DTOs
+﻿using OnlineLearningPlatform.Core;
+
+namespace OnlineLearningPlatform.DAL.DTOs
 {
     public class User
     {
@@ -21,8 +22,8 @@ namespace OnlineLearningPlatform.Core.DTOs
 
         public bool IsDeactivated { get; set; }
 
-        public List<Course>? TaughtCourses { get; set; }
+        public ICollection<Course>? TaughtCourses { get; set; }
 
-        public List<Enrollment>? Enrollments { get; set; }
+        public ICollection<Enrollment>? Enrollments { get; set; }
     }
 }

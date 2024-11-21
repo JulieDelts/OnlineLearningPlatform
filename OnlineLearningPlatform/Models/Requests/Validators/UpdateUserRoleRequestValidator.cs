@@ -6,7 +6,7 @@ namespace OnlineLearningPlatform.Models.Requests.Validators
     {
         public UpdateUserRoleRequestValidator()
         {
-            RuleFor(model => model.Role).IsInEnum().WithMessage("The Role property must be a valid role in the system.");
+            RuleFor(model => model.Role).NotEmpty().WithMessage("The Role property must not be empty.").IsInEnum().WithMessage("The Role property must be a valid role in the system.");
         }
     }
 }

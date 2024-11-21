@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineLearningPlatform.Core.DTOs;
+using OnlineLearningPlatform.DAL.DTOs;
 
 namespace OnlineLearningPlatform.DAL
 {
@@ -12,7 +12,7 @@ namespace OnlineLearningPlatform.DAL
             _context = new OnlineLearningPlatformContext();
         }
 
-        public async Task<Guid> Create(Course course)
+        public async Task<Guid> CreateCourse(Course course)
         {
             _context.Course.Add(course);
             await _context.SaveChangesAsync();
@@ -38,7 +38,7 @@ namespace OnlineLearningPlatform.DAL
             }
         }
 
-        public async Task<List<Course>> GetAll()
+        public async Task<List<Course>> GetAllCourses()
         {
             var courses = await _context.Course.Where(c => c.IsDeactivated == false).ToListAsync();
 
@@ -52,7 +52,7 @@ namespace OnlineLearningPlatform.DAL
             }
         }
 
-        public async Task<Course> GetById(Guid id)
+        public async Task<Course> GetCourseByIdWithFullInfo(Guid id)
         {
             var course = await _context.Course.Where(c => c.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.User).Include(u => u.Teacher).FirstOrDefaultAsync();
 
@@ -66,46 +66,72 @@ namespace OnlineLearningPlatform.DAL
             }
         }
 
-        public async Task Update(Guid id, Course course)
+        public async Task UpdateCourse(Guid id, Course course)
         {
-            var courseToUpdate = await _context.Course.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var courseToUpdate = await GetCourseById(id);
 
-            if (courseToUpdate != null)
-            {
-                courseToUpdate.Name = course.Name;
-                courseToUpdate.Description = course.Description;
-                courseToUpdate.NumberOfLessons = course.NumberOfLessons;
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
+            courseToUpdate.Name = course.Name;
+            courseToUpdate.Description = course.Description;
+            courseToUpdate.NumberOfLessons = course.NumberOfLessons;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ReviewCourse(Enrollment enrollment)
+        {
+            var enrollmentToUpdate = await GetEnrollmentById(enrollment);
+
+            enrollmentToUpdate.StudentReview = enrollment.StudentReview;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task GradeStudent(Enrollment enrollment)
+        {
+            var enrollmentToUpdate = await GetEnrollmentById(enrollment);
+
+            enrollmentToUpdate.Grade = enrollment.Grade;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ControlAttendance(Enrollment enrollment)
+        {
+            var enrollmentToUpdate = await GetEnrollmentById(enrollment);
+
+            enrollmentToUpdate.Attendance = enrollment.Attendance;
+            await _context.SaveChangesAsync();
         }
 
         public async Task Disenroll(Enrollment enrollment)
         {
-            var enrollmentToDeactivate = _context.Enrollment.Where(en => en.User.Id == enrollment.User.Id && en.Course.Id == enrollment.Course.Id).FirstOrDefaultAsync();
+            var enrollmentToDeactivate = await GetEnrollmentById(enrollment);
 
-            if (enrollmentToDeactivate != null)
-            {
-                _context.Enrollment.Remove(enrollment);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new ArgumentException("The entities are not found.");
-            }
+            _context.Enrollment.Remove(enrollment);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task Deactivate(Guid id)
+        public async Task DeactivateCourse(Guid id)
         {
-            var courseToUpdate = await _context.Course.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var courseToUpdate = await GetCourseById(id);
 
-            if (courseToUpdate != null)
+            courseToUpdate.IsDeactivated = true;
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task DeleteCourse(Guid id)
+        {
+            var courseToDelete = await GetCourseById(id);
+
+            _context.Course.Remove(courseToDelete);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<Course> GetCourseById(Guid id)
+        {
+            var course = await _context.Course.Where(c => c.Id == id).FirstOrDefaultAsync();
+
+            if (course != null)
             {
-                courseToUpdate.IsDeactivated = true;
-                await _context.SaveChangesAsync();
+                return course;
             }
             else
             {
@@ -113,14 +139,13 @@ namespace OnlineLearningPlatform.DAL
             }
         }
 
-        public async Task Delete(Guid id)
+        private async Task<Enrollment> GetEnrollmentById(Enrollment enrollment)
         {
-            var courseToDelete = await _context.Course.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var enrollmentToGet = await _context.Enrollment.Where(en => en.User.Id == enrollment.User.Id && en.Course.Id == enrollment.Course.Id).FirstOrDefaultAsync();
 
-            if (courseToDelete != null)
+            if (enrollmentToGet != null)
             {
-                _context.Course.Remove(courseToDelete);
-                await _context.SaveChangesAsync();
+                return enrollmentToGet;
             }
             else
             {
