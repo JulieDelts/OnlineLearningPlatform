@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
+using OnlineLearningPlatform.BLL.Interfaces;
 
 namespace OnlineLearningPlatform.Controllers
 {
@@ -10,6 +11,13 @@ namespace OnlineLearningPlatform.Controllers
     [Authorize]
     public class CoursesController: ControllerBase
     {
+        private readonly ICoursesService _service; 
+
+        public CoursesController(ICoursesService service) 
+        {
+            _service = service;
+        }
+
         [HttpPost]
         public ActionResult<Guid> CreateCourse([FromBody] CreateCourseRequest request)
         {

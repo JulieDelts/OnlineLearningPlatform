@@ -6,11 +6,11 @@ namespace OnlineLearningPlatform.DAL
 {
     public class CoursesRepository : ICoursesRepository
     {
-        private OnlineLearningPlatformContext _context;
+        private readonly OnlineLearningPlatformContext _context;
 
-        public CoursesRepository()
+        public CoursesRepository(OnlineLearningPlatformContext context)
         {
-            _context = new OnlineLearningPlatformContext();
+            _context = context;
         }
 
         public async Task<Guid> CreateCourse(Course course)

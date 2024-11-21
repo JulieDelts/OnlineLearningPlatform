@@ -3,7 +3,11 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using OnlineLearningPlatform.BLL;
+using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.Core;
+using OnlineLearningPlatform.DAL;
+using OnlineLearningPlatform.DAL.Interfaces;
 using OnlineLearningPlatform.Models.Requests;
 
 namespace OnlineLearningPlatform
@@ -32,6 +36,13 @@ namespace OnlineLearningPlatform
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthConfigOptions.Key))
                 };
             });
+
+            builder.Services.AddScoped<ICoursesService, CoursesService>();
+            builder.Services.AddScoped<IUsersService, UsersService>();
+
+            builder.Services.AddScoped<ICoursesRepository, CoursesRepository>();
+            builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+            builder.Services.AddScoped<OnlineLearningPlatformContext>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

@@ -1,8 +1,8 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using OnlineLearningPlatform.DAL;
+using Microsoft.IdentityModel.Tokens;
+using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.Interfaces;
 
@@ -10,11 +10,11 @@ namespace OnlineLearningPlatform.BLL
 {
     public class UsersService : IUsersService
     {
-        private IUsersRepository _repository;
+        private readonly IUsersRepository _repository;
 
-        public UsersService()
+        public UsersService(IUsersRepository repository)
         {
-            _repository = new UsersRepository();
+            _repository = repository;
         }
 
         public async Task<string?> CheckCredentials(string login, string password)
@@ -24,19 +24,23 @@ namespace OnlineLearningPlatform.BLL
             if (user != null)
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthConfigOptions.Key));
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                 var tokenOptions = new JwtSecurityToken(
                     issuer: AuthConfigOptions.Issuer,
                     audience: AuthConfigOptions.Audience,
-                    claims: new List<Claim>(),
+                    claims: new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.Role, user.Role.ToString()),
+                        new Claim("SystemId", user.Id.ToString())
+                    },
                     expires: DateTime.Now.AddMinutes(60),
-                    signingCredentials: signinCredentials
+                    signingCredentials: signingCredentials
                 );
 
                 return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             }
             else
-            { 
+            {
                 return null;
             }
         }
