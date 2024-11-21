@@ -11,11 +11,11 @@ namespace OnlineLearningPlatform.Controllers
     [Authorize]
     public class UsersController: ControllerBase
     {
-        private IUsersManager _manager;
+        private IUsersService _service;
 
         public UsersController() 
         { 
-            _manager = new UsersManager();
+            _service = new UsersService();
         }
 
         [HttpPost, AllowAnonymous]
@@ -33,7 +33,7 @@ namespace OnlineLearningPlatform.Controllers
                 return BadRequest("The login request is invalid.");
             }
 
-            var token = await _manager.CheckCredentials(request.Login, request.Password);
+            var token = await _service.CheckCredentials(request.Login, request.Password);
 
             if (token != null)
             {

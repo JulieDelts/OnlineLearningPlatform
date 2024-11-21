@@ -1,7 +1,7 @@
 ﻿
 namespace OnlineLearningPlatform.Core
 {
-    public class AuthConfigOptions
+    public static class AuthConfigOptions
     {
         public const string Issuer = "OnlineLearningPlatform";
         public const string Audience = "OnlineLearningPlatformUsers";

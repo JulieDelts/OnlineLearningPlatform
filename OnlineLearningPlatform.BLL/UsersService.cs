@@ -8,11 +8,11 @@ using OnlineLearningPlatform.DAL.Interfaces;
 
 namespace OnlineLearningPlatform.BLL
 {
-    public class UsersManager : IUsersManager
+    public class UsersService : IUsersService
     {
         private IUsersRepository _repository;
 
-        public UsersManager()
+        public UsersService()
         {
             _repository = new UsersRepository();
         }
