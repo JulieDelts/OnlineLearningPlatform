@@ -1,9 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using OnlineLearningPlatform.BLL;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
@@ -37,21 +33,11 @@ namespace OnlineLearningPlatform.Controllers
                 return BadRequest("The login request is invalid.");
             }
 
-            var user = await _manager.CheckCredentials(request.Login, request.Password);
+            var token = await _manager.CheckCredentials(request.Login, request.Password);
 
-            if (user != null)
+            if (token != null)
             {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthConfigOptions.Key));
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                var tokenOptions = new JwtSecurityToken(
-                    issuer: AuthConfigOptions.Issuer,
-                    audience: AuthConfigOptions.Audience,
-                    claims: new List<Claim>(),
-                    expires: DateTime.Now.AddMinutes(60),
-                    signingCredentials: signinCredentials
-                );
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                return Ok(new AuthenticatedResponse { Token = tokenString });
+                return Ok(new AuthenticatedResponse { Token = token });
             }
             else
             {

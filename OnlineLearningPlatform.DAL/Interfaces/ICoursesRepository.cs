@@ -1,6 +1,6 @@
 ﻿using OnlineLearningPlatform.DAL.DTOs;
 
-namespace OnlineLearningPlatform.DAL
+namespace OnlineLearningPlatform.DAL.Interfaces
 {
     public interface ICoursesRepository
     {

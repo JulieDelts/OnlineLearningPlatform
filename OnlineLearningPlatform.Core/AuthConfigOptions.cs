@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace OnlineLearningPlatform.Core
 {
-    internal class AuthConfigOptions
+    public class AuthConfigOptions
     {
+        public const string Issuer = "OnlineLearningPlatform";
+        public const string Audience = "OnlineLearningPlatformUsers";
+        public const string Key = "superSecretKey@345superSecretKey@345QweQwe";
     }
 }
