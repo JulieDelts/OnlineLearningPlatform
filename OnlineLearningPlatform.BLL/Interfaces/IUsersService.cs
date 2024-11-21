@@ -1,5 +1,4 @@
-﻿
-namespace OnlineLearningPlatform.BLL
+﻿namespace OnlineLearningPlatform.BLL.Interfaces
 {
     public interface IUsersService
     {

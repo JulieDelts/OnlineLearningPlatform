@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OnlineLearningPlatform.BLL;
+using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
 
@@ -11,11 +11,11 @@ namespace OnlineLearningPlatform.Controllers
     [Authorize]
     public class UsersController: ControllerBase
     {
-        private IUsersService _service;
+        private readonly IUsersService _service;
 
-        public UsersController() 
+        public UsersController(IUsersService service) 
         { 
-            _service = new UsersService();
+            _service = service;
         }
 
         [HttpPost, AllowAnonymous]

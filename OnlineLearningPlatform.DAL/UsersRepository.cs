@@ -6,11 +6,11 @@ namespace OnlineLearningPlatform.DAL
 {
     public class UsersRepository : IUsersRepository
     {
-        private OnlineLearningPlatformContext _context;
+        private readonly OnlineLearningPlatformContext _context;
 
-        public UsersRepository()
+        public UsersRepository(OnlineLearningPlatformContext context)
         {
-            _context = new OnlineLearningPlatformContext();
+            _context = context;
         }
 
         public async Task<Guid> Register(User user)
