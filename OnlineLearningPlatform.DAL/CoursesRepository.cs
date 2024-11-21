@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.DAL.DTOs;
+using OnlineLearningPlatform.DAL.Interfaces;
 
 namespace OnlineLearningPlatform.DAL
 {
