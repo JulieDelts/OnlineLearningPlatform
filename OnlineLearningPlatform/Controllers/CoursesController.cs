@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
 
@@ -6,6 +7,7 @@ namespace OnlineLearningPlatform.Controllers
 {
     [ApiController]
     [Route("api/courses")]
+    [Authorize]
     public class CoursesController: ControllerBase
     {
         [HttpPost]

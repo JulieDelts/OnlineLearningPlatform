@@ -3,7 +3,7 @@ using OnlineLearningPlatform.DAL.DTOs;
 
 namespace OnlineLearningPlatform.DAL
 {
-    public class CoursesRepository
+    public class CoursesRepository : ICoursesRepository
     {
         private OnlineLearningPlatformContext _context;
 

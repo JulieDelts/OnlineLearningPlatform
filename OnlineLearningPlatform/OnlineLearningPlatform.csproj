@@ -8,12 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OnlineLearningPlatform.BLL\OnlineLearningPlatform.BLL.csproj" />
     <ProjectReference Include="..\OnlineLearningPlatform.Core\OnlineLearningPlatform.Core.csproj" />
-    <ProjectReference Include="..\OnlineLearningPlatform.DAL\OnlineLearningPlatform.DAL.csproj" />
   </ItemGroup>
 
 </Project>

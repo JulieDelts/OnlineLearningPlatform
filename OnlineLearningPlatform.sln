@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.Core
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.DAL", "OnlineLearningPlatform.DAL\OnlineLearningPlatform.DAL.csproj", "{E39E272D-C1DB-426B-87AF-93BD04126680}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.BLL", "OnlineLearningPlatform.BLL\OnlineLearningPlatform.BLL.csproj", "{11453F22-8438-4552-A34C-0B53DC22CEFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E39E272D-C1DB-426B-87AF-93BD04126680}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E39E272D-C1DB-426B-87AF-93BD04126680}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E39E272D-C1DB-426B-87AF-93BD04126680}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11453F22-8438-4552-A34C-0B53DC22CEFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11453F22-8438-4552-A34C-0B53DC22CEFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11453F22-8438-4552-A34C-0B53DC22CEFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11453F22-8438-4552-A34C-0B53DC22CEFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
