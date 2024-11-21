@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineLearningPlatform.Core.DTOs;
+using OnlineLearningPlatform.DAL.DTOs;
 
 namespace OnlineLearningPlatform.DAL
 {
@@ -27,7 +27,7 @@ namespace OnlineLearningPlatform.DAL
             return user;
         }
 
-        public async Task<List<User>> GetAll()
+        public async Task<List<User>> GetAllUsers()
         {
             var users = await _context.User.Where(u => u.IsDeactivated == false).ToListAsync();
 
@@ -41,7 +41,7 @@ namespace OnlineLearningPlatform.DAL
             }
         }
 
-        public async Task<User> GetById(Guid id)
+        public async Task<User> GetUserByIdWithFullInfo(Guid id)
         {
             var user = await _context.User.Where(s => s.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.Course).Include(u => u.TaughtCourses).FirstOrDefaultAsync();
 
@@ -57,75 +57,54 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task UpdateProfile(Guid id, User user)
         {
-            var userToUpdate = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var userToUpdate = await GetUserById(id);
 
-            if (userToUpdate != null)
-            {
-                userToUpdate.FirstName = user.FirstName;
-                userToUpdate.LastName = user.LastName;
-                userToUpdate.Email = user.Email;
-                userToUpdate.Phone = user.Phone;
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
+            userToUpdate.FirstName = user.FirstName;
+            userToUpdate.LastName = user.LastName;
+            userToUpdate.Email = user.Email;
+            userToUpdate.Phone = user.Phone;
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateRole(Guid id, User user)
         {
-            var userToUpdate = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var userToUpdate = await GetUserById(id);
 
-            if (userToUpdate != null)
-            {
-                userToUpdate.Role = user.Role;
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
+            userToUpdate.Role = user.Role;
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdatePassword(Guid id, User user)
         {
-            var userToUpdate = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var userToUpdate = await GetUserById(id);
 
-            if (userToUpdate != null)
-            {
-                userToUpdate.Password = user.Password;
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
+            userToUpdate.Password = user.Password;
+            await _context.SaveChangesAsync();
         }
 
-        public async Task Deactivate(Guid id)
+        public async Task DeactivateUser(Guid id)
         {
-            var userToUpdate = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var userToUpdate = await GetUserById(id);
 
-            if (userToUpdate != null)
-            {
-                userToUpdate.IsDeactivated = true;
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
+            userToUpdate.IsDeactivated = true;
+            await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(Guid id)
+        public async Task DeleteUser(Guid id)
         {
-            var userToDelete = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var userToDelete = await GetUserById(id);
 
-            if (userToDelete != null)
+            _context.User.Remove(userToDelete);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<User> GetUserById(Guid id)
+        {
+            var user = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
+
+            if (user != null)
             {
-                _context.User.Remove(userToDelete);
-                await _context.SaveChangesAsync();
+                return user;
             }
             else
             {

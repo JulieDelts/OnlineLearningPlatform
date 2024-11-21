@@ -1,5 +1,5 @@
 ﻿
-namespace OnlineLearningPlatform.Core.DTOs
+namespace OnlineLearningPlatform.DAL.DTOs
 {
     public class Course
     {
@@ -15,6 +15,6 @@ namespace OnlineLearningPlatform.Core.DTOs
 
         public User Teacher { get; set; }
 
-        public List<Enrollment>? Enrollments { get; set; }
+        public ICollection<Enrollment>? Enrollments { get; set; }
     }
 }

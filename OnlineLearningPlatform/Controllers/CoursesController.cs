@@ -41,6 +41,24 @@ namespace OnlineLearningPlatform.Controllers
             return NoContent();
         }
 
+        [HttpPatch("{id}/grade")]
+        public IActionResult GradeStudent([FromBody] GradeStudentRequest request)
+        {
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/attendance")]
+        public IActionResult ControlAttendance([FromBody] ControlAttendanceRequest request)
+        {
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/review")]
+        public IActionResult ReviewCourse([FromBody] CourseReviewRequest request)
+        {
+            return NoContent();
+        }
+
         [HttpPatch("{id}/deactivate")]
         public IActionResult DeactivateCourse([FromRoute] Guid id)
         {
