@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.DAL.DTOs;
+using OnlineLearningPlatform.DAL.EntityConfigurations;
 
 namespace OnlineLearningPlatform.DAL
 {
-    public class OnlineLearningPlatformContext: DbContext
+    public class OnlineLearningPlatformContext : DbContext
     {
         public DbSet<User> User { get; set; }
 
@@ -13,6 +14,7 @@ namespace OnlineLearningPlatform.DAL
 
         public OnlineLearningPlatformContext()
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -20,6 +22,13 @@ namespace OnlineLearningPlatform.DAL
         {
             string connectionString = "Host=localhost;Port=5432;Database=OLPDB;Username=postgres;Password=postgres;";
             optionsBuilder.UseNpgsql(connectionString);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new CourseConfiguration());
+            modelBuilder.ApplyConfiguration(new EnrollmentConfiguration());
         }
     }
 }
