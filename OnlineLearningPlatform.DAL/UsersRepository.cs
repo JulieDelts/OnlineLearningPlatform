@@ -3,7 +3,7 @@ using OnlineLearningPlatform.DAL.DTOs;
 
 namespace OnlineLearningPlatform.DAL
 {
-    public class UsersRepository
+    public class UsersRepository : IUsersRepository
     {
         private OnlineLearningPlatformContext _context;
 
@@ -22,9 +22,7 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<User?> CheckCredentials(string login, string password)
         {
-            var user = await _context.User.Where(u => u.Login == login && u.Password == password).FirstOrDefaultAsync();
-
-            return user;
+            return await _context.User.Where(u => u.Login == login && u.Password == password).FirstOrDefaultAsync();
         }
 
         public async Task<List<User>> GetAllUsers()

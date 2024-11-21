@@ -11,6 +11,11 @@ namespace OnlineLearningPlatform.DAL
 
         public DbSet<Enrollment> Enrollment { get; set; }
 
+        public OnlineLearningPlatformContext()
+        {
+            Database.EnsureCreated();
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = "Host=localhost;Port=5432;Database=OLPDB;Username=postgres;Password=postgres;";
