@@ -14,6 +14,7 @@ namespace OnlineLearningPlatform.DAL
 
         public OnlineLearningPlatformContext()
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 

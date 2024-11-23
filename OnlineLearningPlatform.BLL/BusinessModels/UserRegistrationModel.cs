@@ -1,7 +1,7 @@
 ﻿
-namespace OnlineLearningPlatform.Models.Requests
+namespace OnlineLearningPlatform.BLL.BusinessModels
 {
-    public class RegisterRequest
+    public class UserRegistrationModel
     {
         public string FirstName { get; set; }
 

@@ -21,9 +21,9 @@ namespace OnlineLearningPlatform.DAL
             return user.Id;
         }
 
-        public async Task<User?> CheckCredentials(string login, string password)
+        public async Task<User?> GetUserByLogin(string login)
         {
-            return await _context.User.Where(u => u.Login == login && u.Password == password).FirstOrDefaultAsync();
+            return await _context.User.Where(u => u.Login == login).SingleOrDefaultAsync();
         }
 
         public async Task<List<User>> GetAllUsers()

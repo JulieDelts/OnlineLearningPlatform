@@ -1,7 +1,11 @@
-﻿namespace OnlineLearningPlatform.BLL.Interfaces
+﻿using OnlineLearningPlatform.BLL.BusinessModels;
+
+namespace OnlineLearningPlatform.BLL.Interfaces
 {
     public interface IUsersService
     {
-        Task<string?> CheckCredentials(string login, string password);
+        Task<Guid?> Register(UserRegistrationModel user);
+
+        Task<string?> Authenticate(string login, string password);
     }
 }
