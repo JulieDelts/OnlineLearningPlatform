@@ -13,8 +13,7 @@ namespace OnlineLearningPlatform.DAL.EntityConfigurations
             .IsUnique();
 
             builder.Property(s => s.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
+            .IsRequired();
 
             builder.Property(s => s.FirstName)
             .IsRequired()
