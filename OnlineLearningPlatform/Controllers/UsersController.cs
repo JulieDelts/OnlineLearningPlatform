@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineLearningPlatform.BLL.Interfaces;
+using OnlineLearningPlatform.BLL.BusinessModels;
+using OnlineLearningPlatform.Mappings;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
 
@@ -13,16 +16,37 @@ namespace OnlineLearningPlatform.Controllers
     {
         private readonly IUsersService _service;
 
+        private readonly Mapper _mapper;
+
         public UsersController(IUsersService service) 
         { 
             _service = service;
+            var config = new MapperConfiguration(
+               cfg =>
+               {
+                   cfg.AddProfile(new APIUserMapperProfile());
+               });
+            _mapper = new Mapper(config);
         }
 
         [HttpPost, AllowAnonymous]
         public ActionResult<Guid> Register([FromBody] RegisterRequest request)
         {
-            var newUserId = Guid.NewGuid();
-            return Ok(newUserId);
+            if (request == null)
+            {
+                return BadRequest("The register request is invalid.");
+            }
+
+            var registrationModel = _mapper.Map<UserRegistrationModel>(request);
+
+            var newId = _service.Register(registrationModel);
+
+            if (newId == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(newId);
         }
 
         [HttpPost("login"), AllowAnonymous]
@@ -33,7 +57,7 @@ namespace OnlineLearningPlatform.Controllers
                 return BadRequest("The login request is invalid.");
             }
 
-            var token = await _service.CheckCredentials(request.Login, request.Password);
+            var token = await _service.Authenticate(request.Login, request.Password);
 
             if (token != null)
             {

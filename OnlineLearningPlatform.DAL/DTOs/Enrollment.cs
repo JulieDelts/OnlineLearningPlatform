@@ -3,7 +3,7 @@ namespace OnlineLearningPlatform.DAL.DTOs
 {
     public class Enrollment
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } 
 
         public User User { get; set; }
 

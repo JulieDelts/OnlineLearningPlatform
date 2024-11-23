@@ -4,7 +4,7 @@ namespace OnlineLearningPlatform.DAL.Interfaces
 {
     public interface IUsersRepository
     {
-        Task<User?> CheckCredentials(string login, string password);
+        Task<User?> GetUserByLogin(string login);
 
         Task DeactivateUser(Guid id);
 
