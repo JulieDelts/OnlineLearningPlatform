@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.BLL.BusinessModels;
+using OnlineLearningPlatform.Models.Responses;
 
 namespace OnlineLearningPlatform.Mappings
 {
@@ -9,6 +10,8 @@ namespace OnlineLearningPlatform.Mappings
         public APIUserMapperProfile()
         {
             CreateMap<RegisterRequest, UserRegistrationModel>();
+            CreateMap<UserModel, UserResponse>();
+            CreateMap<ExtendedUserModel, ExtendedUserResponse>();
         }
     }
 }

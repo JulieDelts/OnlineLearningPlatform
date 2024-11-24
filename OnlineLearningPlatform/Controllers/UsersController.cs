@@ -25,6 +25,7 @@ namespace OnlineLearningPlatform.Controllers
                cfg =>
                {
                    cfg.AddProfile(new APIUserMapperProfile());
+                   cfg.AddProfile(new APICourseMapperProfile());
                });
             _mapper = new Mapper(config);
         }
@@ -70,17 +71,23 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<UserResponse>> GetUsers()
+        public async Task<ActionResult<List<UserResponse>>> GetUsers()
         {
-            List<UserResponse> users = new List<UserResponse>();
-            return Ok(users);
+            var users = await _service.GetAllUsers();
+
+            var response = _mapper.Map<List<UserResponse>>(users);
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ExtendedUserResponse> GetUserById([FromRoute] Guid id)
+        public async Task<ActionResult<ExtendedUserResponse>> GetUserById([FromRoute] Guid id)
         {
-            var user = new ExtendedUserResponse();
-            return Ok(user);
+            var user = await _service.GetUserById(id);
+
+            var response = _mapper.Map<ExtendedUserResponse>(user);
+
+            return Ok(response);
         }
 
         [HttpPut("{id}/profile")]
