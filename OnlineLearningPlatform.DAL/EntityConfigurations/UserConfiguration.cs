@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 
 namespace OnlineLearningPlatform.DAL.EntityConfigurations
@@ -13,7 +12,8 @@ namespace OnlineLearningPlatform.DAL.EntityConfigurations
             .IsUnique();
 
             builder.Property(s => s.Id)
-            .IsRequired();
+            .IsRequired()
+            .ValueGeneratedOnAdd();
 
             builder.Property(s => s.FirstName)
             .IsRequired()
@@ -30,6 +30,9 @@ namespace OnlineLearningPlatform.DAL.EntityConfigurations
             builder.Property(s => s.Password)
             .IsRequired()
             .HasMaxLength(150);
+
+            builder.Property(s => s.Role)
+            .IsRequired();
 
             builder.Property(s => s.Email)
             .IsRequired()

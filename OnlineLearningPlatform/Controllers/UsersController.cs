@@ -30,16 +30,16 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public ActionResult<Guid> Register([FromBody] RegisterRequest request)
+        public async Task<ActionResult<Guid>> Register([FromBody] RegisterRequest request)
         {
             if (request == null)
             {
-                return BadRequest("The register request is invalid.");
+                return BadRequest();
             }
 
             var registrationModel = _mapper.Map<UserRegistrationModel>(request);
 
-            var newId = _service.Register(registrationModel);
+            var newId = await _service.Register(registrationModel);
 
             if (newId == null)
             {
@@ -50,18 +50,18 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpPost("login"), AllowAnonymous]
-        public async Task<ActionResult<AuthenticatedResponse>> Login([FromBody] LoginRequest request)
+        public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
         {
-            if (request is null)
+            if (request == null)
             {
-                return BadRequest("The login request is invalid.");
+                return BadRequest();
             }
 
             var token = await _service.Authenticate(request.Login, request.Password);
 
             if (token != null)
             {
-                return Ok(new AuthenticatedResponse { Token = token });
+                return Ok(token);
             }
             else
             {
