@@ -16,7 +16,7 @@ namespace OnlineLearningPlatform.BLL
     {
         private readonly IUsersRepository _repository;
 
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         public UsersService(IUsersRepository repository)
         {
@@ -31,7 +31,7 @@ namespace OnlineLearningPlatform.BLL
             _mapper = new Mapper(config);
         }
 
-        public async Task<Guid?> Register(UserRegistrationModel userToRegister)
+        public async Task<Guid> Register(UserRegistrationModel userToRegister)
         {
             var user = await _repository.GetUserByLogin(userToRegister.Login);
 
@@ -47,11 +47,11 @@ namespace OnlineLearningPlatform.BLL
             }
             else
             {
-                return null;
+                throw new ArgumentException();
             }
         }
 
-        public async Task<string?> Authenticate(string login, string password)
+        public async Task<string> Authenticate(string login, string password)
         {
             var user = await _repository.GetUserByLogin(login);
 
@@ -61,7 +61,7 @@ namespace OnlineLearningPlatform.BLL
             }
             else
             {
-                return null;
+                throw new ArgumentException();
             }
         }
 
@@ -72,7 +72,6 @@ namespace OnlineLearningPlatform.BLL
             var users = _mapper.Map<List<UserModel>>(userDTOs);
 
             return users;
-
         }
 
         public async Task<ExtendedUserModel> GetUserById(Guid id)
@@ -90,6 +89,44 @@ namespace OnlineLearningPlatform.BLL
             user.Enrollments = enrollments;
 
             return user;
+        }
+
+        public async Task UpdatePassword(Guid id, UpdateUserPasswordModel passwordModel)
+        {
+            var user = await _repository.GetUserById(id);
+
+            if (CheckPassword(passwordModel.CurrentPassword, user.Password))
+            {
+                var password = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordModel.NewPassword);
+
+                await _repository.UpdatePassword(id, password);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public async Task UpdateProfile(Guid id, UpdateUserProfileModel profileModel)
+        {
+            var uerDTO = _mapper.Map<User>(profileModel);
+
+            await _repository.UpdateProfile(id, uerDTO);
+        }
+
+        public async Task UpdateRole(Guid id, Role role)
+        {
+            await _repository.UpdateRole(id, role);
+        }
+
+        public async Task DeactivateUser(Guid id)
+        {
+            await _repository.DeactivateUser(id);
+        }
+
+        public async Task DeleteUser(Guid id)
+        {
+            await _repository.DeleteUser(id);
         }
 
         private bool CheckPassword(string passwordToCheck, string passwordHash)
