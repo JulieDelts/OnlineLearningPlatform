@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
 
@@ -28,16 +29,7 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<List<User>> GetAllUsers()
         {
-            var users = await _context.User.Where(u => u.IsDeactivated == false).ToListAsync();
-
-            if (users != null)
-            {
-                return users;
-            }
-            else
-            {
-                return new List<User>();
-            }
+            return await _context.User.Where(u => u.IsDeactivated == false).ToListAsync();
         }
 
         public async Task<User> GetUserByIdWithFullInfo(Guid id)
@@ -65,19 +57,19 @@ namespace OnlineLearningPlatform.DAL
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateRole(Guid id, User user)
+        public async Task UpdateRole(Guid id, Role role)
         {
             var userToUpdate = await GetUserById(id);
 
-            userToUpdate.Role = user.Role;
+            userToUpdate.Role = role;
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdatePassword(Guid id, User user)
+        public async Task UpdatePassword(Guid id, string password)
         {
             var userToUpdate = await GetUserById(id);
 
-            userToUpdate.Password = user.Password;
+            userToUpdate.Password = password;
             await _context.SaveChangesAsync();
         }
 
@@ -97,7 +89,7 @@ namespace OnlineLearningPlatform.DAL
             await _context.SaveChangesAsync();
         }
 
-        private async Task<User> GetUserById(Guid id)
+        public async Task<User> GetUserById(Guid id)
         {
             var user = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
 

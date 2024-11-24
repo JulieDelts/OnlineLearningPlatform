@@ -1,4 +1,5 @@
-﻿using OnlineLearningPlatform.DAL.DTOs;
+﻿using OnlineLearningPlatform.Core;
+using OnlineLearningPlatform.DAL.DTOs;
 
 namespace OnlineLearningPlatform.DAL.Interfaces
 {
@@ -14,12 +15,14 @@ namespace OnlineLearningPlatform.DAL.Interfaces
 
         Task<User> GetUserByIdWithFullInfo(Guid id);
 
+        Task<User> GetUserById(Guid id);
+
         Task<Guid> Register(User user);
 
-        Task UpdatePassword(Guid id, User user);
+        Task UpdatePassword(Guid id, string password);
 
         Task UpdateProfile(Guid id, User user);
 
-        Task UpdateRole(Guid id, User user);
+        Task UpdateRole(Guid id, Role role);
     }
 }

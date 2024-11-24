@@ -12,6 +12,8 @@ namespace OnlineLearningPlatform.Mappings
             CreateMap<RegisterRequest, UserRegistrationModel>();
             CreateMap<UserModel, UserResponse>();
             CreateMap<ExtendedUserModel, ExtendedUserResponse>();
+            CreateMap<UpdateUserPasswordRequest, UpdateUserPasswordModel>();
+            CreateMap<UpdateUserProfileRequest, UpdateUserProfileModel>();
         }
     }
 }

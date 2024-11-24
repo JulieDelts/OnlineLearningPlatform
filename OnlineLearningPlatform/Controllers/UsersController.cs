@@ -16,7 +16,7 @@ namespace OnlineLearningPlatform.Controllers
     {
         private readonly IUsersService _service;
 
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         public UsersController(IUsersService service) 
         { 
@@ -33,19 +33,9 @@ namespace OnlineLearningPlatform.Controllers
         [HttpPost, AllowAnonymous]
         public async Task<ActionResult<Guid>> Register([FromBody] RegisterRequest request)
         {
-            if (request == null)
-            {
-                return BadRequest();
-            }
-
             var registrationModel = _mapper.Map<UserRegistrationModel>(request);
 
             var newId = await _service.Register(registrationModel);
-
-            if (newId == null)
-            {
-                return BadRequest();
-            }
 
             return Ok(newId);
         }
@@ -53,21 +43,9 @@ namespace OnlineLearningPlatform.Controllers
         [HttpPost("login"), AllowAnonymous]
         public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
         {
-            if (request == null)
-            {
-                return BadRequest();
-            }
-
             var token = await _service.Authenticate(request.Login, request.Password);
 
-            if (token != null)
-            {
-                return Ok(token);
-            }
-            else
-            {
-                return Unauthorized();
-            }
+            return Ok(token);
         }
 
         [HttpGet]
@@ -91,14 +69,20 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpPut("{id}/profile")]
-        public IActionResult UpdateUserProfile([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
+        public async Task<IActionResult> UpdateUserProfile([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
         {
+            var profile = _mapper.Map<UpdateUserProfileModel>(request);
+
+            await _service.UpdateProfile(id, profile);
+
             return NoContent();
         }
 
         [HttpPatch("{id}/role")]
-        public IActionResult UpdateUserRole([FromRoute] Guid id, [FromBody] UpdateUserRoleRequest request)
+        public async Task<IActionResult> UpdateUserRole([FromRoute] Guid id, [FromBody] UpdateUserRoleRequest request)
         {
+            await _service.UpdateRole(id, request.Role);
+
             return NoContent();
         }
 
@@ -109,14 +93,18 @@ namespace OnlineLearningPlatform.Controllers
         }
 
         [HttpPatch("{id}/deactivate")]
-        public IActionResult DeactivateUser([FromRoute] Guid id)
+        public async Task<IActionResult> DeactivateUser([FromRoute] Guid id)
         {
+            await _service.DeactivateUser(id);
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
         {
+            await _service.DeleteUser(id);
+
             return NoContent();
         }
     }
