@@ -9,6 +9,10 @@ namespace OnlineLearningPlatform.BLL.Mappings
         public BLLUserMapperProfile()
         {
             CreateMap<UserRegistrationModel, User>();
+            CreateMap<User, UserModel>();
+            CreateMap<User, ExtendedUserModel>()
+                 .ForMember(dest => dest.TaughtCourses, opt => opt.Ignore())
+                 .ForMember(dest => dest.Enrollments, opt => opt.Ignore());
         }
     }
 }

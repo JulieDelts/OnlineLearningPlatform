@@ -3,9 +3,9 @@ using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
+using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.BLL.Mappings;
-using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
@@ -26,6 +26,7 @@ namespace OnlineLearningPlatform.BLL
                 cfg =>
                 {
                     cfg.AddProfile(new BLLUserMapperProfile());
+                    cfg.AddProfile(new BLLCourseMapperProfile());
                 });
             _mapper = new Mapper(config);
         }
@@ -37,8 +38,11 @@ namespace OnlineLearningPlatform.BLL
             if (user == null)
             {
                 var userDTO = _mapper.Map<User>(userToRegister);
+
                 userDTO.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(userToRegister.Password);
+
                 var newId = await _repository.Register(userDTO);
+
                 return newId;
             }
             else
@@ -59,6 +63,33 @@ namespace OnlineLearningPlatform.BLL
             {
                 return null;
             }
+        }
+
+        public async Task<List<UserModel>> GetAllUsers()
+        {
+            var userDTOs = await _repository.GetAllUsers();
+
+            var users = _mapper.Map<List<UserModel>>(userDTOs);
+
+            return users;
+
+        }
+
+        public async Task<ExtendedUserModel> GetUserById(Guid id)
+        {
+            var userDTO = await _repository.GetUserByIdWithFullInfo(id);
+
+            var user = _mapper.Map<ExtendedUserModel>(userDTO);
+
+            List<CourseModel> courses = _mapper.Map<List<CourseModel>>(userDTO.TaughtCourses);
+
+            user.TaughtCourses = courses;
+
+            List<CourseEnrollmentModel> enrollments = _mapper.Map<List<CourseEnrollmentModel>>(userDTO.Enrollments);
+
+            user.Enrollments = enrollments;
+
+            return user;
         }
 
         private bool CheckPassword(string passwordToCheck, string passwordHash)
