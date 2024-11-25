@@ -1,10 +1,9 @@
 ﻿
-namespace OnlineLearningPlatform.Core
+namespace OnlineLearningPlatform.Core;
+
+public enum Role
 {
-    public enum Role
-    {
-        Student,
-        Teacher,
-        Admin
-    }
+    Student,
+    Teacher,
+    Admin
 }

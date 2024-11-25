@@ -1,9 +1,8 @@
-﻿namespace OnlineLearningPlatform.Models.Responses
-{
-    public class CourseResponse
-    {
-        public string Name { get; set; }
+﻿namespace OnlineLearningPlatform.Models.Responses;
 
-        public string Description { get; set; }
-    }
+public class CourseResponse
+{
+    public string Name { get; set; }
+
+    public string Description { get; set; }
 }

@@ -7,105 +7,108 @@ using OnlineLearningPlatform.Mappings;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
 
-namespace OnlineLearningPlatform.Controllers
+namespace OnlineLearningPlatform.Controllers;
+
+[ApiController]
+[Route("api/users")]
+[Authorize]
+public class UsersController: ControllerBase
 {
-    [ApiController]
-    [Route("api/users")]
-    [Authorize]
-    public class UsersController: ControllerBase
+    private readonly IUsersService _service;
+
+    private readonly IMapper _mapper;
+
+    public UsersController(IUsersService service) 
+    { 
+        _service = service;
+        var config = new MapperConfiguration(
+           cfg =>
+           {
+               cfg.AddProfile(new APIUserMapperProfile());
+               cfg.AddProfile(new APICourseMapperProfile());
+           });
+        _mapper = new Mapper(config);
+    }
+
+    [HttpPost, AllowAnonymous]
+    public async Task<ActionResult<Guid>> RegisterAsync([FromBody] RegisterRequest request)
     {
-        private readonly IUsersService _service;
+        var registrationModel = _mapper.Map<UserRegistrationModel>(request);
 
-        private readonly IMapper _mapper;
+        var newId = await _service.RegisterAsync(registrationModel);
 
-        public UsersController(IUsersService service) 
-        { 
-            _service = service;
-            var config = new MapperConfiguration(
-               cfg =>
-               {
-                   cfg.AddProfile(new APIUserMapperProfile());
-                   cfg.AddProfile(new APICourseMapperProfile());
-               });
-            _mapper = new Mapper(config);
-        }
+        return Ok(newId);
+    }
 
-        [HttpPost, AllowAnonymous]
-        public async Task<ActionResult<Guid>> Register([FromBody] RegisterRequest request)
-        {
-            var registrationModel = _mapper.Map<UserRegistrationModel>(request);
+    [HttpPost("login"), AllowAnonymous]
+    public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequest request)
+    {
+        var token = await _service.AuthenticateAsync(request.Login, request.Password);
 
-            var newId = await _service.Register(registrationModel);
+        return Ok(token);
+    }
 
-            return Ok(newId);
-        }
+    [HttpGet]
+    public async Task<ActionResult<List<UserResponse>>> GetUsersAsync()
+    {
+        var users = await _service.GetAllUsersAsync();
 
-        [HttpPost("login"), AllowAnonymous]
-        public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
-        {
-            var token = await _service.Authenticate(request.Login, request.Password);
+        var response = _mapper.Map<List<UserResponse>>(users);
 
-            return Ok(token);
-        }
+        return Ok(response);
+    }
 
-        [HttpGet]
-        public async Task<ActionResult<List<UserResponse>>> GetUsers()
-        {
-            var users = await _service.GetAllUsers();
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ExtendedUserResponse>> GetUserByIdAsync([FromRoute] Guid id)
+    {
+        var user = await _service.GetUserByIdAsync(id);
 
-            var response = _mapper.Map<List<UserResponse>>(users);
+        var response = _mapper.Map<ExtendedUserResponse>(user);
 
-            return Ok(response);
-        }
+        return Ok(response);
+    }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ExtendedUserResponse>> GetUserById([FromRoute] Guid id)
-        {
-            var user = await _service.GetUserById(id);
+    [HttpPut("{id}/profile")]
+    public async Task<IActionResult> UpdateUserProfileAsync([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
+    {
+        var profile = _mapper.Map<UpdateUserProfileModel>(request);
 
-            var response = _mapper.Map<ExtendedUserResponse>(user);
+        await _service.UpdateProfileAsync(id, profile);
 
-            return Ok(response);
-        }
+        return NoContent();
+    }
 
-        [HttpPut("{id}/profile")]
-        public async Task<IActionResult> UpdateUserProfile([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
-        {
-            var profile = _mapper.Map<UpdateUserProfileModel>(request);
+    [HttpPatch("{id}/role")]
+    public async Task<IActionResult> UpdateUserRoleAsync([FromRoute] Guid id, [FromBody] UpdateUserRoleRequest request)
+    {
+        await _service.UpdateRoleAsync(id, request.Role);
 
-            await _service.UpdateProfile(id, profile);
+        return NoContent();
+    }
 
-            return NoContent();
-        }
+    [HttpPatch("{id}/password")]
+    public async Task<IActionResult> UpdateUserPasswordAsync([FromRoute] Guid id, [FromBody] UpdateUserPasswordRequest request)
+    {
+        var passwordModel = _mapper.Map<UpdateUserPasswordModel>(request);
 
-        [HttpPatch("{id}/role")]
-        public async Task<IActionResult> UpdateUserRole([FromRoute] Guid id, [FromBody] UpdateUserRoleRequest request)
-        {
-            await _service.UpdateRole(id, request.Role);
+        await _service.UpdatePasswordAsync(id, passwordModel);
 
-            return NoContent();
-        }
+        return NoContent();
+    }
 
-        [HttpPatch("{id}/password")]
-        public IActionResult UpdateUserPassword([FromRoute] Guid id, [FromBody] UpdateUserPasswordRequest request)
-        {
-            return NoContent();
-        }
+    [HttpPatch("{id}/deactivate")]
+    public async Task<IActionResult> DeactivateUserAsync([FromRoute] Guid id)
+    {
+        await _service.DeactivateUserAsync(id);
 
-        [HttpPatch("{id}/deactivate")]
-        public async Task<IActionResult> DeactivateUser([FromRoute] Guid id)
-        {
-            await _service.DeactivateUser(id);
+        return NoContent();
+    }
 
-            return NoContent();
-        }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid id)
+    {
+        await _service.DeleteUserAsync(id);
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
-        {
-            await _service.DeleteUser(id);
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

@@ -1,26 +1,25 @@
 ﻿using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.Core;
 
-namespace OnlineLearningPlatform.BLL.Interfaces
+namespace OnlineLearningPlatform.BLL.Interfaces;
+
+public interface IUsersService
 {
-    public interface IUsersService
-    {
-        Task<Guid> Register(UserRegistrationModel user);
+    Task<Guid> RegisterAsync(UserRegistrationModel user);
 
-        Task<string> Authenticate(string login, string password);
+    Task<string> AuthenticateAsync(string login, string password);
 
-        Task<ExtendedUserModel> GetUserById(Guid id);
+    Task<ExtendedUserModel> GetUserByIdAsync(Guid id);
 
-        Task<List<UserModel>> GetAllUsers();
+    Task<List<UserModel>> GetAllUsersAsync();
 
-        Task UpdateRole(Guid id, Role role);
+    Task UpdateRoleAsync(Guid id, Role role);
 
-        Task UpdateProfile(Guid id, UpdateUserProfileModel profileModel);
+    Task UpdateProfileAsync(Guid id, UpdateUserProfileModel profileModel);
 
-        Task UpdatePassword(Guid id, UpdateUserPasswordModel passwordModel);
+    Task UpdatePasswordAsync(Guid id, UpdateUserPasswordModel passwordModel);
 
-        Task DeactivateUser(Guid id);
+    Task DeactivateUserAsync(Guid id);
 
-        Task DeleteUser(Guid id);
-    }
+    Task DeleteUserAsync(Guid id);
 }

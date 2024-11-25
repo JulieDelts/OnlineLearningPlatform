@@ -1,12 +1,8 @@
-using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using OnlineLearningPlatform.BLL;
 using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.Configuration;
-using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL;
 using OnlineLearningPlatform.DAL.Interfaces;
 using OnlineLearningPlatform.Models.Requests;
@@ -19,30 +15,14 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddAuthentication(opt =>
-        {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = AuthConfigOptions.Issuer,
-                ValidAudience = AuthConfigOptions.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthConfigOptions.Key))
-            };
-        });
+        builder.Services.AddAuth();
 
         builder.Services.AddScoped<ICoursesService, CoursesService>();
         builder.Services.AddScoped<IUsersService, UsersService>();
 
         builder.Services.AddScoped<ICoursesRepository, CoursesRepository>();
         builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+        builder.Services.AddScoped<IEnrollmentsRepository, EnrollmentsRepository>();
         builder.Services.AddScoped<OnlineLearningPlatformContext>();
 
         builder.Services.AddControllers();

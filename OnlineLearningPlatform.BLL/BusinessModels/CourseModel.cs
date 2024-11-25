@@ -1,10 +1,9 @@
 ﻿
-namespace OnlineLearningPlatform.BLL.BusinessModels
-{
-    public class CourseModel
-    {
-        public string Name { get; set; }
+namespace OnlineLearningPlatform.BLL.BusinessModels;
 
-        public string Description { get; set; }
-    }
+public class CourseModel
+{
+    public string Name { get; set; }
+
+    public string Description { get; set; }
 }
