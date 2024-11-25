@@ -1,7 +1,10 @@
 ﻿
+using OnlineLearningPlatform.DAL.DTOs;
+using OnlineLearningPlatform.DAL.Interfaces;
+
 namespace OnlineLearningPlatform.DAL
 {
-    public class EnrollmentsRepository
+    public class EnrollmentsRepository : IEnrollmentsRepository
     {
 
         private readonly OnlineLearningPlatformContext _context;
@@ -9,6 +12,12 @@ namespace OnlineLearningPlatform.DAL
         public EnrollmentsRepository(OnlineLearningPlatformContext context)
         {
             _context = context;
+        }
+
+        public async Task CreateEnrollmentAsync(Enrollment enrollment)
+        {
+            _context.Enrollments.Add(enrollment);
+            await _context.SaveChangesAsync();
         }
     }
 }

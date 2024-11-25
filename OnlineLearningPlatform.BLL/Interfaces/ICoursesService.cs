@@ -15,5 +15,6 @@ namespace OnlineLearningPlatform.BLL.Interfaces
         Task DeactivateCourse(Guid id);
 
         Task DeleteCourse(Guid id);
+        Task EnrollStudent(Guid courseId, Guid userId);
     }
 }
