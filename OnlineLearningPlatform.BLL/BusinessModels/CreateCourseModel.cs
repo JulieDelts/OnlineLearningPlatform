@@ -1,11 +1,14 @@
-﻿namespace OnlineLearningPlatform.Models.Requests
+﻿
+namespace OnlineLearningPlatform.BLL.BusinessModels
 {
-    public class UpdateCourseRequest
+    public class CreateCourseModel
     {
         public string Name { get; set; }
 
         public string Description { get; set; }
 
         public int NumberOfLessons { get; set; }
+
+        public Guid TeacherId { get; set; }
     }
 }

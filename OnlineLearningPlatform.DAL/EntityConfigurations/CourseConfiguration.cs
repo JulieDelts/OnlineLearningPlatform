@@ -20,6 +20,7 @@ namespace OnlineLearningPlatform.DAL.EntityConfigurations
             .HasMaxLength(100);
 
             builder.Property(s => s.Description)
+            .IsRequired()
             .HasMaxLength(1000);
 
             builder.Property(s => s.NumberOfLessons)

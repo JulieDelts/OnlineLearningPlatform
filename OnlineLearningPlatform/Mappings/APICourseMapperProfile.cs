@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OnlineLearningPlatform.BLL.BusinessModels;
+using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
 
 namespace OnlineLearningPlatform.Mappings
@@ -10,6 +11,9 @@ namespace OnlineLearningPlatform.Mappings
         {
             CreateMap<CourseModel, CourseResponse>();
             CreateMap<CourseEnrollmentModel, CourseEnrollmentResponse>();
+            CreateMap<CreateCourseRequest, CreateCourseModel>();
+            CreateMap<UpdateCourseRequest, UpdateCourseModel>();
+            CreateMap<ExtendedCourseModel, ExtendedCourseResponse>();
         }
     }
 }

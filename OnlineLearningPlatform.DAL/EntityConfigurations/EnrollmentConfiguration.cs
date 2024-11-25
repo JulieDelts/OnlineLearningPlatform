@@ -12,14 +12,7 @@ namespace OnlineLearningPlatform.DAL.EntityConfigurations
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-            builder.Property(s => s.Grade)
-            .IsRequired();
-
-            builder.Property(s => s.Attendance)
-            .IsRequired();
-
             builder.Property(s => s.StudentReview)
-            .IsRequired()
             .HasMaxLength(1500);
 
             builder.HasOne(en => en.User)

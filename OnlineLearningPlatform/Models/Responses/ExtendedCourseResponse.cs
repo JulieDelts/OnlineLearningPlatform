@@ -6,7 +6,9 @@
 
         public int NumberOfLessons { get; set; }
 
-        public List<UserResponse> Users { get; set; }
+        public UserResponse Teacher { get; set; }
+
+        public List<UserResponse> Students { get; set; }
     }
 }
 
