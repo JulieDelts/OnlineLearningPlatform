@@ -10,9 +10,12 @@ namespace OnlineLearningPlatform.BLL.Mappings
         public BLLCourseMapperProfile() 
         {
             CreateMap<Course, CourseModel>();
+            CreateMap<Course, ExtendedCourseModel>();
             CreateMap<Enrollment, CourseEnrollmentModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Course.Name))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Course.Description));
+            CreateMap<CreateCourseModel, Course>();
+            CreateMap<UpdateCourseModel, Course>();
         }
     }
 }

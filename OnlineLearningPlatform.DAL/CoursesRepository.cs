@@ -41,21 +41,26 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<List<Course>> GetAllCourses()
         {
-            var courses = await _context.Course.Where(c => c.IsDeactivated == false).ToListAsync();
-
-            if (courses != null)
-            {
-                return courses;
-            }
-            else
-            {
-                return new List<Course>();
-            }
+            return await _context.Course.Where(c => c.IsDeactivated == false).ToListAsync();
         }
 
         public async Task<Course> GetCourseByIdWithFullInfo(Guid id)
         {
             var course = await _context.Course.Where(c => c.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.User).Include(u => u.Teacher).FirstOrDefaultAsync();
+
+            if (course != null)
+            {
+                return course;
+            }
+            else
+            {
+                throw new ArgumentException("The entity is not found.");
+            }
+        }
+
+        public async Task<Course> GetCourseById(Guid id)
+        {
+            var course = await _context.Course.Where(c => c.Id == id).FirstOrDefaultAsync();
 
             if (course != null)
             {
@@ -124,20 +129,6 @@ namespace OnlineLearningPlatform.DAL
 
             _context.Course.Remove(courseToDelete);
             await _context.SaveChangesAsync();
-        }
-
-        private async Task<Course> GetCourseById(Guid id)
-        {
-            var course = await _context.Course.Where(c => c.Id == id).FirstOrDefaultAsync();
-
-            if (course != null)
-            {
-                return course;
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
         }
 
         private async Task<Enrollment> GetEnrollmentById(Enrollment enrollment)

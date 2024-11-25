@@ -20,6 +20,8 @@ namespace OnlineLearningPlatform.DAL.Interfaces
 
         Task<Course> GetCourseByIdWithFullInfo(Guid id);
 
+        Task<Course> GetCourseById(Guid id);
+
         Task GradeStudent(Enrollment enrollment);
 
         Task ReviewCourse(Enrollment enrollment);
