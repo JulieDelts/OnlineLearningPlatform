@@ -1,28 +1,27 @@
 ﻿using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 
-namespace OnlineLearningPlatform.DAL.Interfaces
+namespace OnlineLearningPlatform.DAL.Interfaces;
+
+public interface IUsersRepository
 {
-    public interface IUsersRepository
-    {
-        Task<User?> GetUserByLogin(string login);
+    Task<User?> GetUserByLoginAsync(string login);
 
-        Task DeactivateUser(Guid id);
+    Task DeactivateUserAsync(User user);
 
-        Task DeleteUser(Guid id);
+    Task DeleteUserAsync(User user);
 
-        Task<List<User>> GetAllUsers();
+    Task<List<User>> GetAllUsersAsync();
 
-        Task<User> GetUserByIdWithFullInfo(Guid id);
+    Task<User> GetUserByIdWithFullInfoAsync(Guid id);
 
-        Task<User> GetUserById(Guid id);
+    Task<User> GetUserByIdAsync(Guid id);
 
-        Task<Guid> Register(User user);
+    Task<Guid> RegisterAsync(User user);
 
-        Task UpdatePassword(Guid id, string password);
+    Task UpdatePasswordAsync(User user, string password);
 
-        Task UpdateProfile(Guid id, User user);
+    Task UpdateProfileAsync(User user, User userUpdate);
 
-        Task UpdateRole(Guid id, Role role);
-    }
+    Task UpdateRoleAsync(User user, Role role);
 }

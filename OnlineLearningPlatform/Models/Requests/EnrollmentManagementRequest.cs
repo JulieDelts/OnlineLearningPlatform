@@ -1,7 +1,6 @@
-﻿namespace OnlineLearningPlatform.Models.Requests
+﻿namespace OnlineLearningPlatform.Models.Requests;
+
+public class EnrollmentManagementRequest
 {
-    public class EnrollmentManagementRequest
-    {
-        public Guid UserId { get; set; }
-    }
+    public Guid UserId { get; set; }
 }

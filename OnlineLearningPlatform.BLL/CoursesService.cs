@@ -36,36 +36,37 @@ public class CoursesService: ICoursesService
         _mapper = new Mapper(config);
     }
 
-    public async Task<Guid> CreateCourse(CreateCourseModel course)
+    public async Task<Guid> CreateCourseAsync(CreateCourseModel course)
     {
         var courseDTO = _mapper.Map<Course>(course);
 
-        var user = await _usersRepository.GetUserById(course.TeacherId);
+        var user = await _usersRepository.GetUserByIdAsync(course.TeacherId);
 
         if (user.Role != Role.Teacher)
-        {
-            throw new ArgumentException();
-        }
+            throw new EntityConflictException("The role of the user is not correct.");
 
         courseDTO.Teacher = user;
 
-        var id = await _coursesRepository.CreateCourse(courseDTO);
+        var id = await _coursesRepository.CreateCourseAsync(courseDTO);
 
         return id;
     }
 
-    public async Task<List<CourseModel>> GetAllCourses()
+    public async Task<List<CourseModel>> GetAllCoursesAsync()
     { 
-        var courseDTOs = await _coursesRepository.GetAllCourses();
+        var courseDTOs = await _coursesRepository.GetAllCoursesAsync();
 
         var courses = _mapper.Map<List<CourseModel>>(courseDTOs);
 
         return courses;
     }
 
-    public async Task<ExtendedCourseModel> GetCourseById(Guid id)
+    public async Task<ExtendedCourseModel> GetCourseByIdAsync(Guid id)
     { 
-        var courseDTO = await _coursesRepository.GetCourseByIdWithFullInfo(id);
+        var courseDTO = await _coursesRepository.GetCourseByIdWithFullInfoAsync(id);
+
+        if (courseDTO == null)
+            throw new EntityNotFoundException($"Course with id {id} was not found.");
 
         var course = _mapper.Map<ExtendedCourseModel>(courseDTO);
 
@@ -76,40 +77,101 @@ public class CoursesService: ICoursesService
         return course;
     }
 
-    public async Task UpdateCourse(Guid id, UpdateCourseModel course)
+    public async Task UpdateCourseAsync(Guid id, UpdateCourseModel course)
     {
-        var courseDTO = _mapper.Map<Course>(course);
+        var courseDTO = await _coursesRepository.GetCourseByIdAsync(id);
 
-        await _coursesRepository.UpdateCourse(id,courseDTO);
+        if (courseDTO == null)
+            throw new EntityNotFoundException($"Course with id {id} was not found.");
+
+        var courseUpdate = _mapper.Map<Course>(course);
+
+        await _coursesRepository.UpdateCourseAsync(courseDTO, courseUpdate);
     }
 
-    public async Task DeactivateCourse(Guid id) => await _coursesRepository.DeactivateCourse(id);
-
-    public async Task DeleteCourse(Guid id)
+    public async Task DeactivateCourseAsync(Guid id)
     {
-        var course = _coursesRepository.GetCourseById(id);
-        if (course == null)
-            throw new EntityNotFoundException($"Course with id {id} was not found");  // ex.Message
+        var courseDTO = await _coursesRepository.GetCourseByIdAsync(id);
 
-        await _coursesRepository.DeleteCourse(id);
+        if (courseDTO == null)
+            throw new EntityNotFoundException($"Course with id {id} was not found.");
+
+        await _coursesRepository.DeactivateCourseAsync(courseDTO);
     }
 
-    public async Task EnrollStudent(Guid courseId, Guid userId)
+    public async Task DeleteCourseAsync(Guid id)
     {
-        var course = await _coursesRepository.GetCourseById(courseId);
-        if (course == null)
-            throw new EntityNotFoundException($"Course with id {courseId} was not found");
+        var courseDTO = await _coursesRepository.GetCourseByIdAsync(id);
 
-        var user = await _usersRepository.GetUserById(userId); 
-        if (user == null)
-            throw new EntityNotFoundException($"User with id {userId} was not found");
+        if (courseDTO == null)
+            throw new EntityNotFoundException($"Course with id {id} was not found.");
+
+        await _coursesRepository.DeleteCourseAsync(courseDTO);
+    }
+
+    public async Task EnrollAsync(Guid courseId, Guid userId)
+    {
+        var courseDTO = await _coursesRepository.GetCourseByIdAsync(courseId);
+
+        if (courseDTO == null)
+            throw new EntityNotFoundException($"Course with id {courseId} was not found.");
+
+        var userDTO = await _usersRepository.GetUserByIdAsync(userId); 
+
+        if (userDTO == null)
+            throw new EntityNotFoundException($"User with id {userId} was not found.");
+
+        var enrollmentDTO = await _enrollmentsRepository.GetEnrollmentByIdAsync(courseId, userId);
+
+        if (enrollmentDTO != null)
+            throw new EntityConflictException($"Enrollment with user id {userId} and course id {courseId} already exists.");
 
         var newEnrollment = new Enrollment()
         {
-            Course = course,
-            User = user
+            Course = courseDTO,
+            User = userDTO
         };
 
-        await _enrollmentsRepository.CreateEnrollmentAsync(newEnrollment);
+        await _enrollmentsRepository.EnrollAsync(newEnrollment);
+    }
+
+    public async Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance)
+    {
+        var enrollmentDTO = await _enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
+
+        if (enrollmentDTO == null)
+            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+
+        await _enrollmentsRepository.ControlAttendanceAsync(enrollmentDTO, attendance);
+    }
+
+    public async Task DisenrollAsync(EnrollmentManagementModel enrollment)
+    {
+        var enrollmentDTO = await _enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
+
+        if (enrollmentDTO == null)
+            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+
+        await _enrollmentsRepository.DisenrollAsync(enrollmentDTO);
+    }
+
+    public async Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade)
+    {
+        var enrollmentDTO = await _enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
+
+        if (enrollmentDTO == null)
+            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+
+        await _enrollmentsRepository.GradeStudentAsync(enrollmentDTO, grade);
+    }
+
+    public async Task ReviewCourseAsync(EnrollmentManagementModel enrollment, string review)
+    {
+        var enrollmentDTO = await _enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
+
+        if (enrollmentDTO == null)
+            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+
+        await _enrollmentsRepository.ReviewCourseAsync(enrollmentDTO, review);
     }
 }

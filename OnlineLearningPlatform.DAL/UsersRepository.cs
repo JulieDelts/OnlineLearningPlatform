@@ -3,104 +3,75 @@ using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
 
-namespace OnlineLearningPlatform.DAL
+namespace OnlineLearningPlatform.DAL;
+
+public class UsersRepository : IUsersRepository
 {
-    public class UsersRepository : IUsersRepository
+    private readonly OnlineLearningPlatformContext _context;
+
+    public UsersRepository(OnlineLearningPlatformContext context)
     {
-        private readonly OnlineLearningPlatformContext _context;
+        _context = context;
+    }
 
-        public UsersRepository(OnlineLearningPlatformContext context)
-        {
-            _context = context;
-        }
+    public async Task<Guid> RegisterAsync(User user)
+    {
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
 
-        public async Task<Guid> Register(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+        return user.Id;
+    }
 
-            return user.Id;
-        }
+    public async Task<User?> GetUserByLoginAsync(string login)
+    {
+        return await _context.Users.Where(u => u.Login == login).SingleOrDefaultAsync();
+    }
 
-        public async Task<User?> GetUserByLogin(string login)
-        {
-            return await _context.Users.Where(u => u.Login == login).SingleOrDefaultAsync();
-        }
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _context.Users.Where(u => u.IsDeactivated == false).ToListAsync();
+    }
 
-        public async Task<List<User>> GetAllUsers()
-        {
-            return await _context.Users.Where(u => u.IsDeactivated == false).ToListAsync();
-        }
+    public async Task<User> GetUserByIdWithFullInfoAsync(Guid id)
+    {
+        return await _context.Users.Where(s => s.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.Course).Include(u => u.TaughtCourses).SingleOrDefaultAsync();
+    }
 
-        public async Task<User> GetUserByIdWithFullInfo(Guid id)
-        {
-            var user = await _context.Users.Where(s => s.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.Course).Include(u => u.TaughtCourses).FirstOrDefaultAsync();
+    public async Task<User> GetUserByIdAsync(Guid id)
+    {
+        return await _context.Users.Where(s => s.Id == id).SingleOrDefaultAsync();
+    }
 
-            if (user != null)
-            {
-                return user;
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
-        }
+    public async Task UpdateProfileAsync(User user, User userUpdate)
+    {
+        user.FirstName = userUpdate.FirstName;
+        user.LastName = userUpdate.LastName;
+        user.Email = userUpdate.Email;
+        user.Phone = userUpdate.Phone;
+        await _context.SaveChangesAsync();
+    }
 
-        public async Task UpdateProfile(Guid id, User user)
-        {
-            var userToUpdate = await GetUserById(id);
+    public async Task UpdateRoleAsync(User user, Role role)
+    {
+        user.Role = role;
+        await _context.SaveChangesAsync();
+    }
 
-            userToUpdate.FirstName = user.FirstName;
-            userToUpdate.LastName = user.LastName;
-            userToUpdate.Email = user.Email;
-            userToUpdate.Phone = user.Phone;
-            await _context.SaveChangesAsync();
-        }
+    public async Task UpdatePasswordAsync(User user, string password)
+    {
+        user.Password = password;
+        await _context.SaveChangesAsync();
+    }
 
-        public async Task UpdateRole(Guid id, Role role)
-        {
-            var userToUpdate = await GetUserById(id);
+    public async Task DeactivateUserAsync(User user)
+    {
+        user.IsDeactivated = true;
+        await _context.SaveChangesAsync();
+    }
 
-            userToUpdate.Role = role;
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdatePassword(Guid id, string password)
-        {
-            var userToUpdate = await GetUserById(id);
-
-            userToUpdate.Password = password;
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeactivateUser(Guid id)
-        {
-            var userToUpdate = await GetUserById(id);
-
-            userToUpdate.IsDeactivated = true;
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteUser(Guid id)
-        {
-            var userToDelete = await GetUserById(id);
-
-            _context.Users.Remove(userToDelete);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<User> GetUserById(Guid id)
-        {
-            var user = await _context.Users.Where(s => s.Id == id).FirstOrDefaultAsync();
-
-            if (user != null)
-            {
-                return user;
-            }
-            else
-            {
-                throw new ArgumentException("The entity is not found.");
-            }
-        }
+    public async Task DeleteUserAsync(User user)
+    {
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
     }
 }

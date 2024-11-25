@@ -1,9 +1,8 @@
-﻿namespace OnlineLearningPlatform.Models.Requests
-{
-    public class LoginRequest
-    {
-        public string Login { get; set; }
+﻿namespace OnlineLearningPlatform.Models.Requests;
 
-        public string Password { get; set; }
-    }
+public class LoginRequest
+{
+    public string Login { get; set; }
+
+    public string Password { get; set; }
 }

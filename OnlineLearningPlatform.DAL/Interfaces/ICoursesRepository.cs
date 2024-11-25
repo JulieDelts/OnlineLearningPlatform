@@ -1,31 +1,20 @@
 ﻿using OnlineLearningPlatform.DAL.DTOs;
 
-namespace OnlineLearningPlatform.DAL.Interfaces
+namespace OnlineLearningPlatform.DAL.Interfaces;
+
+public interface ICoursesRepository
 {
-    public interface ICoursesRepository
-    {
-        Task ControlAttendance(Enrollment enrollment);
+    Task<Guid> CreateCourseAsync(Course course);
 
-        Task<Guid> CreateCourse(Course course);
+    Task DeactivateCourseAsync(Course course);
 
-        Task DeactivateCourse(Guid id);
+    Task DeleteCourseAsync(Course course);
 
-        Task DeleteCourse(Guid id);
+    Task<List<Course>> GetAllCoursesAsync();
 
-        Task Disenroll(Enrollment enrollment);
+    Task<Course> GetCourseByIdWithFullInfoAsync(Guid id);
 
-        Task Enroll(Enrollment enrollment);
+    Task<Course> GetCourseByIdAsync(Guid id);
 
-        Task<List<Course>> GetAllCourses();
-
-        Task<Course> GetCourseByIdWithFullInfo(Guid id);
-
-        Task<Course> GetCourseById(Guid id);
-
-        Task GradeStudent(Enrollment enrollment);
-
-        Task ReviewCourse(Enrollment enrollment);
-
-        Task UpdateCourse(Guid id, Course course);
-    }
+    Task UpdateCourseAsync(Course course, Course courseUpdate);
 }

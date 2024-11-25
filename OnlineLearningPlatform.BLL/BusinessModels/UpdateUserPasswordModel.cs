@@ -1,10 +1,9 @@
 ﻿
-namespace OnlineLearningPlatform.BLL.BusinessModels
-{
-    public class UpdateUserPasswordModel
-    {
-        public string CurrentPassword { get; set; }
+namespace OnlineLearningPlatform.BLL.BusinessModels;
 
-        public string NewPassword { get; set; }
-    }
+public class UpdateUserPasswordModel
+{
+    public string CurrentPassword { get; set; }
+
+    public string NewPassword { get; set; }
 }

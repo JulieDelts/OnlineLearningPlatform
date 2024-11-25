@@ -3,17 +3,16 @@ using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
 
-namespace OnlineLearningPlatform.Mappings
+namespace OnlineLearningPlatform.Mappings;
+
+internal class APICourseMapperProfile: Profile
 {
-    public class APICourseMapperProfile: Profile
+    public APICourseMapperProfile()
     {
-        public APICourseMapperProfile()
-        {
-            CreateMap<CourseModel, CourseResponse>();
-            CreateMap<CourseEnrollmentModel, CourseEnrollmentResponse>();
-            CreateMap<CreateCourseRequest, CreateCourseModel>();
-            CreateMap<UpdateCourseRequest, UpdateCourseModel>();
-            CreateMap<ExtendedCourseModel, ExtendedCourseResponse>();
-        }
+        CreateMap<CourseModel, CourseResponse>();
+        CreateMap<CourseEnrollmentModel, CourseEnrollmentResponse>();
+        CreateMap<CreateCourseRequest, CreateCourseModel>();
+        CreateMap<UpdateCourseRequest, UpdateCourseModel>();
+        CreateMap<ExtendedCourseModel, ExtendedCourseResponse>();
     }
 }

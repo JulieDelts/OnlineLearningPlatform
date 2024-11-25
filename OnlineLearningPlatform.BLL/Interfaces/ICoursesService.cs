@@ -1,20 +1,28 @@
 ﻿using OnlineLearningPlatform.BLL.BusinessModels;
 
-namespace OnlineLearningPlatform.BLL.Interfaces
+namespace OnlineLearningPlatform.BLL.Interfaces;
+
+public interface ICoursesService
 {
-    public interface ICoursesService
-    {
-        Task<Guid> CreateCourse(CreateCourseModel course);
+    Task<Guid> CreateCourseAsync(CreateCourseModel course);
 
-        Task<List<CourseModel>> GetAllCourses();
+    Task<List<CourseModel>> GetAllCoursesAsync();
 
-        Task<ExtendedCourseModel> GetCourseById(Guid id);
+    Task<ExtendedCourseModel> GetCourseByIdAsync(Guid id);
 
-        Task UpdateCourse(Guid id, UpdateCourseModel course);
+    Task UpdateCourseAsync(Guid id, UpdateCourseModel course);
 
-        Task DeactivateCourse(Guid id);
+    Task DeactivateCourseAsync(Guid id);
 
-        Task DeleteCourse(Guid id);
-        Task EnrollStudent(Guid courseId, Guid userId);
-    }
+    Task DeleteCourseAsync(Guid id);
+
+    Task EnrollAsync(Guid courseId, Guid userId);
+
+    Task ReviewCourseAsync(EnrollmentManagementModel enrollment, string review);
+
+    Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade);
+
+    Task DisenrollAsync(EnrollmentManagementModel enrollment);
+
+    Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance);
 }

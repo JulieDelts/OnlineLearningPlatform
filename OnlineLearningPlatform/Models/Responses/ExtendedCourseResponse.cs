@@ -1,14 +1,13 @@
-﻿namespace OnlineLearningPlatform.Models.Responses
+﻿namespace OnlineLearningPlatform.Models.Responses;
+
+public class ExtendedCourseResponse: CourseResponse
 {
-    public class ExtendedCourseResponse: CourseResponse
-    {
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        public int NumberOfLessons { get; set; }
+    public int NumberOfLessons { get; set; }
 
-        public UserResponse Teacher { get; set; }
+    public UserResponse Teacher { get; set; }
 
-        public List<UserResponse> Students { get; set; }
-    }
+    public List<UserResponse> Students { get; set; }
 }
 

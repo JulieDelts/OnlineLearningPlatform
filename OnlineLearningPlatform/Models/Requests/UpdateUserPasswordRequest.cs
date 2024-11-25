@@ -1,9 +1,8 @@
-﻿namespace OnlineLearningPlatform.Models.Requests
-{
-    public class UpdateUserPasswordRequest
-    {
-        public string CurrentPassword { get; set; }
+﻿namespace OnlineLearningPlatform.Models.Requests;
 
-        public string NewPassword { get; set; }
-    }
+public class UpdateUserPasswordRequest
+{
+    public string CurrentPassword { get; set; }
+
+    public string NewPassword { get; set; }
 }
