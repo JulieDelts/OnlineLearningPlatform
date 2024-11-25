@@ -16,7 +16,7 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<Guid> Register(User user)
         {
-            _context.User.Add(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             return user.Id;
@@ -24,17 +24,17 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<User?> GetUserByLogin(string login)
         {
-            return await _context.User.Where(u => u.Login == login).SingleOrDefaultAsync();
+            return await _context.Users.Where(u => u.Login == login).SingleOrDefaultAsync();
         }
 
         public async Task<List<User>> GetAllUsers()
         {
-            return await _context.User.Where(u => u.IsDeactivated == false).ToListAsync();
+            return await _context.Users.Where(u => u.IsDeactivated == false).ToListAsync();
         }
 
         public async Task<User> GetUserByIdWithFullInfo(Guid id)
         {
-            var user = await _context.User.Where(s => s.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.Course).Include(u => u.TaughtCourses).FirstOrDefaultAsync();
+            var user = await _context.Users.Where(s => s.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.Course).Include(u => u.TaughtCourses).FirstOrDefaultAsync();
 
             if (user != null)
             {
@@ -85,13 +85,13 @@ namespace OnlineLearningPlatform.DAL
         {
             var userToDelete = await GetUserById(id);
 
-            _context.User.Remove(userToDelete);
+            _context.Users.Remove(userToDelete);
             await _context.SaveChangesAsync();
         }
 
         public async Task<User> GetUserById(Guid id)
         {
-            var user = await _context.User.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var user = await _context.Users.Where(s => s.Id == id).FirstOrDefaultAsync();
 
             if (user != null)
             {

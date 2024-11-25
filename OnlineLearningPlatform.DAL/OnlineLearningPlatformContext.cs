@@ -6,11 +6,11 @@ namespace OnlineLearningPlatform.DAL
 {
     public class OnlineLearningPlatformContext : DbContext
     {
-        public DbSet<User> User { get; set; }
+        public DbSet<User> Users { get; set; }
 
-        public DbSet<Course> Course { get; set; }
+        public DbSet<Course> Courses { get; set; }
 
-        public DbSet<Enrollment> Enrollment { get; set; }
+        public DbSet<Enrollment> Enrollments { get; set; }
 
         public OnlineLearningPlatformContext()
         {

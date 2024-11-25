@@ -15,7 +15,7 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<Guid> CreateCourse(Course course)
         {
-            _context.Course.Add(course);
+            _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
             return course.Id;
@@ -23,14 +23,14 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task Enroll(Enrollment enrollment)
         {
-            var course = _context.Course.Where(c => c.Id == enrollment.Course.Id).FirstOrDefault();
-            var user = _context.User.Where(u => u.Id == enrollment.User.Id).FirstOrDefault();
+            var course = _context.Courses.Where(c => c.Id == enrollment.Course.Id).FirstOrDefault();
+            var user = _context.Users.Where(u => u.Id == enrollment.User.Id).FirstOrDefault();
 
             if (course != null && user != null)
             {
                 enrollment.Course = course;
                 enrollment.User = user;
-                _context.Enrollment.Add(enrollment);
+                _context.Enrollments.Add(enrollment);
                 await _context.SaveChangesAsync();
             }
             else
@@ -41,12 +41,12 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<List<Course>> GetAllCourses()
         {
-            return await _context.Course.Where(c => c.IsDeactivated == false).ToListAsync();
+            return await _context.Courses.Where(c => c.IsDeactivated == false).ToListAsync();
         }
 
         public async Task<Course> GetCourseByIdWithFullInfo(Guid id)
         {
-            var course = await _context.Course.Where(c => c.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.User).Include(u => u.Teacher).FirstOrDefaultAsync();
+            var course = await _context.Courses.Where(c => c.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.User).Include(u => u.Teacher).FirstOrDefaultAsync();
 
             if (course != null)
             {
@@ -60,7 +60,7 @@ namespace OnlineLearningPlatform.DAL
 
         public async Task<Course> GetCourseById(Guid id)
         {
-            var course = await _context.Course.Where(c => c.Id == id).FirstOrDefaultAsync();
+            var course = await _context.Courses.Where(c => c.Id == id).FirstOrDefaultAsync();
 
             if (course != null)
             {
@@ -110,7 +110,7 @@ namespace OnlineLearningPlatform.DAL
         {
             var enrollmentToDeactivate = await GetEnrollmentById(enrollment);
 
-            _context.Enrollment.Remove(enrollment);
+            _context.Enrollments.Remove(enrollment);
             await _context.SaveChangesAsync();
         }
 
@@ -127,13 +127,13 @@ namespace OnlineLearningPlatform.DAL
         {
             var courseToDelete = await GetCourseById(id);
 
-            _context.Course.Remove(courseToDelete);
+            _context.Courses.Remove(courseToDelete);
             await _context.SaveChangesAsync();
         }
 
         private async Task<Enrollment> GetEnrollmentById(Enrollment enrollment)
         {
-            var enrollmentToGet = await _context.Enrollment.Where(en => en.User.Id == enrollment.User.Id && en.Course.Id == enrollment.Course.Id).FirstOrDefaultAsync();
+            var enrollmentToGet = await _context.Enrollments.Where(en => en.User.Id == enrollment.User.Id && en.Course.Id == enrollment.Course.Id).FirstOrDefaultAsync();
 
             if (enrollmentToGet != null)
             {
