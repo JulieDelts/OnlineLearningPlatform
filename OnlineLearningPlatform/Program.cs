@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using OnlineLearningPlatform.BLL;
 using OnlineLearningPlatform.BLL.Interfaces;
+using OnlineLearningPlatform.Configuration;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL;
 using OnlineLearningPlatform.DAL.Interfaces;
@@ -62,6 +63,8 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseMiddleware<ExceptionMiddleware>();
 
         app.MapControllers();
 
