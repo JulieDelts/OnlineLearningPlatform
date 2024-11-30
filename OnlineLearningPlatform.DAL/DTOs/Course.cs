@@ -13,6 +13,8 @@ public class Course
 
     public bool IsDeactivated { get; set; }
 
+    public Guid TeacherId { get; set; }
+
     public User Teacher { get; set; }
 
     public ICollection<Enrollment>? Enrollments { get; set; }
