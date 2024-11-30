@@ -8,6 +8,9 @@ internal class CourseConfiguration : IEntityTypeConfiguration<Course>
 {
     public void Configure(EntityTypeBuilder<Course> builder)
     {
+        builder.ToTable("Course")
+        .HasKey(s => s.Id);
+
         builder.HasIndex(u => u.Name)
         .IsUnique();
 
@@ -31,6 +34,7 @@ internal class CourseConfiguration : IEntityTypeConfiguration<Course>
         .HasDefaultValue(false);
 
         builder.HasOne(c => c.Teacher)
-        .WithMany(u => u.TaughtCourses);
+        .WithMany(u => u.TaughtCourses)
+        .HasForeignKey(c => c.TeacherId);
     }
 }
