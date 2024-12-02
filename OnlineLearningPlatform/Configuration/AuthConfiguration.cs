@@ -22,9 +22,9 @@ internal static class AuthConfiguration
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = ConfigOptions.Issuer,
-                ValidAudience = ConfigOptions.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigOptions.Key))
+                ValidIssuer = AuthConfigOptions.Issuer,
+                ValidAudience = AuthConfigOptions.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthConfigOptions.Key))
             };
         });
     }

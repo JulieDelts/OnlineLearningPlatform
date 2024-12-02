@@ -157,11 +157,11 @@ public class UsersService(IUsersRepository repository, IMapper mapper) : IUsersS
 
     private string GenerateToken(User user)
     {
-        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigOptions.Key));
+        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthConfigOptions.Key));
         var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
         var tokenOptions = new JwtSecurityToken(
-            issuer: ConfigOptions.Issuer,
-            audience: ConfigOptions.Audience,
+            issuer: AuthConfigOptions.Issuer,
+            audience: AuthConfigOptions.Audience,
             claims: new List<Claim>()
             {
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
