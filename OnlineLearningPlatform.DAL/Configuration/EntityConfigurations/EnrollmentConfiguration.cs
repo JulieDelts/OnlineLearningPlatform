@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineLearningPlatform.DAL.DTOs;
 
-namespace OnlineLearningPlatform.DAL.EntityConfigurations;
+namespace OnlineLearningPlatform.DAL.Configuration.EntityConfigurations;
 
 internal class EnrollmentConfiguration : IEntityTypeConfiguration<Enrollment>
 {
@@ -24,6 +24,6 @@ internal class EnrollmentConfiguration : IEntityTypeConfiguration<Enrollment>
 
         builder.HasOne(en => en.Course)
         .WithMany(c => c.Enrollments)
-        .HasForeignKey(e => e.CourseId); 
+        .HasForeignKey(e => e.CourseId);
     }
 }

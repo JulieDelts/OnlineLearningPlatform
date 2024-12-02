@@ -5,7 +5,7 @@ using OnlineLearningPlatform.Core;
 
 namespace OnlineLearningPlatform.Configuration;
 
-internal static class AddAuthConfiguration
+internal static class AuthConfiguration
 {
     internal static void AddAuth(this IServiceCollection services)
     {
