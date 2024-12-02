@@ -6,43 +6,25 @@ using Microsoft.IdentityModel.Tokens;
 using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.BLL.Exceptions;
 using OnlineLearningPlatform.BLL.Interfaces;
-using OnlineLearningPlatform.BLL.Mappings;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
 
 namespace OnlineLearningPlatform.BLL;
 
-public class UsersService : IUsersService
+public class UsersService(IUsersRepository repository, IMapper mapper) : IUsersService
 {
-    private readonly IUsersRepository _repository;
-
-    private readonly IMapper _mapper;
-
-    public UsersService(IUsersRepository repository)
-    {
-        _repository = repository;
-
-        var config = new MapperConfiguration(
-            cfg =>
-            {
-                cfg.AddProfile(new BLLUserMapperProfile());
-                cfg.AddProfile(new BLLCourseMapperProfile());
-            });
-        _mapper = new Mapper(config);
-    }
-
     public async Task<Guid> RegisterAsync(UserRegistrationModel userToRegister)
     {
-        var user = await _repository.GetUserByLoginAsync(userToRegister.Login);
+        var user = await repository.GetUserByLoginAsync(userToRegister.Login);
 
         if (user == null)
         {
-            var userDTO = _mapper.Map<User>(userToRegister);
+            var userDTO = mapper.Map<User>(userToRegister);
 
             userDTO.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(userToRegister.Password);
 
-            var newId = await _repository.RegisterAsync(userDTO);
+            var newId = await repository.RegisterAsync(userDTO);
 
             return newId;
         }
@@ -54,7 +36,7 @@ public class UsersService : IUsersService
 
     public async Task<string> AuthenticateAsync(string login, string password)
     {
-        var user = await _repository.GetUserByLoginAsync(login);
+        var user = await repository.GetUserByLoginAsync(login);
 
         if (user != null && CheckPassword(password, user.Password))
         {
@@ -68,29 +50,29 @@ public class UsersService : IUsersService
 
     public async Task<List<UserModel>> GetAllUsersAsync()
     {
-        var userDTOs = await _repository.GetAllUsersAsync();
+        var userDTOs = await repository.GetAllUsersAsync();
 
-        var users = _mapper.Map<List<UserModel>>(userDTOs);
+        var users = mapper.Map<List<UserModel>>(userDTOs);
 
         return users;
     }
 
     public async Task<ExtendedUserModel> GetUserByIdAsync(Guid id)
     {
-        var userDTO = await _repository.GetUserByIdWithFullInfoAsync(id);
+        var userDTO = await repository.GetUserByIdWithFullInfoAsync(id);
 
         if (userDTO == null)
         {
             throw new EntityNotFoundException($"User with id {id} was not found");
         }
 
-        var user = _mapper.Map<ExtendedUserModel>(userDTO);
+        var user = mapper.Map<ExtendedUserModel>(userDTO);
 
-        List<CourseModel> courses = _mapper.Map<List<CourseModel>>(userDTO.TaughtCourses);
+        List<CourseModel> courses = mapper.Map<List<CourseModel>>(userDTO.TaughtCourses);
 
         user.TaughtCourses = courses;
 
-        List<CourseEnrollmentModel> enrollments = _mapper.Map<List<CourseEnrollmentModel>>(userDTO.Enrollments);
+        List<CourseEnrollmentModel> enrollments = mapper.Map<List<CourseEnrollmentModel>>(userDTO.Enrollments);
 
         user.Enrollments = enrollments;
 
@@ -99,7 +81,7 @@ public class UsersService : IUsersService
 
     public async Task UpdatePasswordAsync(Guid id, UpdateUserPasswordModel passwordModel)
     {
-        var userDTO = await _repository.GetUserByIdAsync(id);
+        var userDTO = await repository.GetUserByIdAsync(id);
 
         if (userDTO == null)
         {
@@ -110,7 +92,7 @@ public class UsersService : IUsersService
         {
             var password = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordModel.NewPassword);
 
-            await _repository.UpdatePasswordAsync(userDTO, password);
+            await repository.UpdatePasswordAsync(userDTO, password);
         }
         else
         {
@@ -120,52 +102,52 @@ public class UsersService : IUsersService
 
     public async Task UpdateProfileAsync(Guid id, UpdateUserProfileModel profileModel)
     {
-        var userProfileDTO = _mapper.Map<User>(profileModel);
+        var userProfileDTO = mapper.Map<User>(profileModel);
 
-        var userDTO = await _repository.GetUserByIdAsync(id);
+        var userDTO = await repository.GetUserByIdAsync(id);
 
         if (userDTO == null)
         {
             throw new EntityNotFoundException($"User with id {id} was not found.");
         }
 
-        await _repository.UpdateProfileAsync(userDTO, userProfileDTO);
+        await repository.UpdateProfileAsync(userDTO, userProfileDTO);
     }
 
     public async Task UpdateRoleAsync(Guid id, Role role)
     {
-        var userDTO = await _repository.GetUserByIdAsync(id);
+        var userDTO = await repository.GetUserByIdAsync(id);
 
         if (userDTO == null)
         {
             throw new EntityNotFoundException($"User with id {id} was not found.");
         }
 
-        await _repository.UpdateRoleAsync(userDTO, role);
+        await repository.UpdateRoleAsync(userDTO, role);
     }
 
     public async Task DeactivateUserAsync(Guid id)
     {
-        var userDTO = await _repository.GetUserByIdAsync(id);
+        var userDTO = await repository.GetUserByIdAsync(id);
 
         if (userDTO == null)
         {
             throw new EntityNotFoundException($"User with id {id} was not found.");
         }
 
-        await _repository.DeactivateUserAsync(userDTO);
+        await repository.DeactivateUserAsync(userDTO);
     }
 
     public async Task DeleteUserAsync(Guid id)
     {
-        var userDTO = await _repository.GetUserByIdAsync(id);
+        var userDTO = await repository.GetUserByIdAsync(id);
 
         if (userDTO == null)
         {
             throw new EntityNotFoundException($"User with id {id} was not found.");
         }
 
-        await _repository.DeleteUserAsync(userDTO);
+        await repository.DeleteUserAsync(userDTO);
     }
 
     private bool CheckPassword(string passwordToCheck, string passwordHash)

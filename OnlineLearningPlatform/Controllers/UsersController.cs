@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.BLL.BusinessModels;
-using OnlineLearningPlatform.Mappings;
+using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
 
@@ -12,30 +11,14 @@ namespace OnlineLearningPlatform.Controllers;
 [ApiController]
 [Route("api/users")]
 [Authorize]
-public class UsersController: ControllerBase
+public class UsersController(IUsersService service, IMapper mapper) : ControllerBase
 {
-    private readonly IUsersService _service;
-
-    private readonly IMapper _mapper;
-
-    public UsersController(IUsersService service) 
-    { 
-        _service = service;
-        var config = new MapperConfiguration(
-           cfg =>
-           {
-               cfg.AddProfile(new APIUserMapperProfile());
-               cfg.AddProfile(new APICourseMapperProfile());
-           });
-        _mapper = new Mapper(config);
-    }
-
     [HttpPost, AllowAnonymous]
     public async Task<ActionResult<Guid>> RegisterAsync([FromBody] RegisterRequest request)
     {
-        var registrationModel = _mapper.Map<UserRegistrationModel>(request);
+        var registrationModel = mapper.Map<UserRegistrationModel>(request);
 
-        var newId = await _service.RegisterAsync(registrationModel);
+        var newId = await service.RegisterAsync(registrationModel);
 
         return Ok(newId);
     }
@@ -43,7 +26,7 @@ public class UsersController: ControllerBase
     [HttpPost("login"), AllowAnonymous]
     public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequest request)
     {
-        var token = await _service.AuthenticateAsync(request.Login, request.Password);
+        var token = await service.AuthenticateAsync(request.Login, request.Password);
 
         return Ok(token);
     }
@@ -51,9 +34,9 @@ public class UsersController: ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<UserResponse>>> GetUsersAsync()
     {
-        var users = await _service.GetAllUsersAsync();
+        var users = await service.GetAllUsersAsync();
 
-        var response = _mapper.Map<List<UserResponse>>(users);
+        var response = mapper.Map<List<UserResponse>>(users);
 
         return Ok(response);
     }
@@ -61,9 +44,9 @@ public class UsersController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ExtendedUserResponse>> GetUserByIdAsync([FromRoute] Guid id)
     {
-        var user = await _service.GetUserByIdAsync(id);
+        var user = await service.GetUserByIdAsync(id);
 
-        var response = _mapper.Map<ExtendedUserResponse>(user);
+        var response = mapper.Map<ExtendedUserResponse>(user);
 
         return Ok(response);
     }
@@ -71,9 +54,9 @@ public class UsersController: ControllerBase
     [HttpPut("{id}/profile")]
     public async Task<IActionResult> UpdateUserProfileAsync([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
     {
-        var profile = _mapper.Map<UpdateUserProfileModel>(request);
+        var profile = mapper.Map<UpdateUserProfileModel>(request);
 
-        await _service.UpdateProfileAsync(id, profile);
+        await service.UpdateProfileAsync(id, profile);
 
         return NoContent();
     }
@@ -81,7 +64,7 @@ public class UsersController: ControllerBase
     [HttpPatch("{id}/role")]
     public async Task<IActionResult> UpdateUserRoleAsync([FromRoute] Guid id, [FromBody] UpdateUserRoleRequest request)
     {
-        await _service.UpdateRoleAsync(id, request.Role);
+        await service.UpdateRoleAsync(id, request.Role);
 
         return NoContent();
     }
@@ -89,9 +72,9 @@ public class UsersController: ControllerBase
     [HttpPatch("{id}/password")]
     public async Task<IActionResult> UpdateUserPasswordAsync([FromRoute] Guid id, [FromBody] UpdateUserPasswordRequest request)
     {
-        var passwordModel = _mapper.Map<UpdateUserPasswordModel>(request);
+        var passwordModel = mapper.Map<UpdateUserPasswordModel>(request);
 
-        await _service.UpdatePasswordAsync(id, passwordModel);
+        await service.UpdatePasswordAsync(id, passwordModel);
 
         return NoContent();
     }
@@ -99,7 +82,7 @@ public class UsersController: ControllerBase
     [HttpPatch("{id}/deactivate")]
     public async Task<IActionResult> DeactivateUserAsync([FromRoute] Guid id)
     {
-        await _service.DeactivateUserAsync(id);
+        await service.DeactivateUserAsync(id);
 
         return NoContent();
     }
@@ -107,7 +90,7 @@ public class UsersController: ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid id)
     {
-        await _service.DeleteUserAsync(id);
+        await service.DeleteUserAsync(id);
 
         return NoContent();
     }

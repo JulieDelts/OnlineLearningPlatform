@@ -1,42 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineLearningPlatform.BLL.BusinessModels;
+using OnlineLearningPlatform.BLL.Interfaces;
 using OnlineLearningPlatform.Models.Requests;
 using OnlineLearningPlatform.Models.Responses;
-using OnlineLearningPlatform.BLL.Interfaces;
-using AutoMapper;
-using OnlineLearningPlatform.Mappings;
-using OnlineLearningPlatform.BLL.BusinessModels;
 
 namespace OnlineLearningPlatform.Controllers;
 
 [ApiController]
 [Route("api/courses")]
 [Authorize]
-public class CoursesController: ControllerBase
+public class CoursesController(ICoursesService service, IMapper mapper) : ControllerBase
 {
-    private readonly ICoursesService _service;
-
-    private readonly IMapper _mapper;
-
-    public CoursesController(ICoursesService service) 
-    {
-        _service = service;
-
-        var config = new MapperConfiguration(
-          cfg =>
-          {
-              cfg.AddProfile(new APICourseMapperProfile());
-              cfg.AddProfile(new APIUserMapperProfile());
-          });
-        _mapper = new Mapper(config);
-    }
-
     [HttpPost]
     public async Task<ActionResult<Guid>> CreateCourseAsync([FromBody] CreateCourseRequest request)
     {
-        var courseModel = _mapper.Map<CreateCourseModel>(request);
+        var courseModel = mapper.Map<CreateCourseModel>(request);
 
-        var newCourseId = await _service.CreateCourseAsync(courseModel);
+        var newCourseId = await service.CreateCourseAsync(courseModel);
 
         return Ok(newCourseId);
     }
@@ -44,7 +26,7 @@ public class CoursesController: ControllerBase
     [HttpPost("{id}/enroll")]
     public async Task<IActionResult> EnrollAsync([FromRoute] Guid id, [FromBody] EnrollmentManagementRequest request)
     {
-        await _service.EnrollAsync(id, request.UserId);
+        await service.EnrollAsync(id, request.UserId);
 
         return NoContent();
     }
@@ -52,9 +34,9 @@ public class CoursesController: ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<CourseResponse>>> GetCoursesAsync()
     {
-        var courseModels = await _service.GetAllCoursesAsync();
+        var courseModels = await service.GetAllCoursesAsync();
 
-        var courses = _mapper.Map<List<CourseResponse>>(courseModels);
+        var courses = mapper.Map<List<CourseResponse>>(courseModels);
 
         return Ok(courses);
     }
@@ -62,9 +44,9 @@ public class CoursesController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ExtendedCourseResponse>> GetCourseByIdAsync([FromRoute] Guid id)
     {
-        var courseModel = await _service.GetCourseByIdAsync(id);
+        var courseModel = await service.GetCourseByIdAsync(id);
 
-        var course = _mapper.Map<ExtendedCourseResponse>(courseModel);
+        var course = mapper.Map<ExtendedCourseResponse>(courseModel);
 
         return Ok(course);
     }
@@ -72,9 +54,9 @@ public class CoursesController: ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCourseAsync([FromRoute] Guid id, [FromBody] UpdateCourseRequest request)
     {
-        var courseModel = _mapper.Map<UpdateCourseModel>(request);
+        var courseModel = mapper.Map<UpdateCourseModel>(request);
 
-        await _service.UpdateCourseAsync(id, courseModel);
+        await service.UpdateCourseAsync(id, courseModel);
 
         return NoContent();
     }
@@ -88,7 +70,7 @@ public class CoursesController: ControllerBase
             UserId = request.UserId
         };
 
-        await _service.GradeStudentAsync(enrollment, request.Grade);
+        await service.GradeStudentAsync(enrollment, request.Grade);
 
         return NoContent();
     }
@@ -102,7 +84,7 @@ public class CoursesController: ControllerBase
             UserId = request.UserId
         };
 
-        await _service.ControlAttendanceAsync(enrollment, request.Attendance);
+        await service.ControlAttendanceAsync(enrollment, request.Attendance);
 
         return NoContent();
     }
@@ -116,7 +98,7 @@ public class CoursesController: ControllerBase
             UserId = request.UserId
         };
 
-        await _service.ReviewCourseAsync(enrollment, request.Review);
+        await service.ReviewCourseAsync(enrollment, request.Review);
 
         return NoContent();
     }
@@ -124,7 +106,7 @@ public class CoursesController: ControllerBase
     [HttpPatch("{id}/deactivate")]
     public async Task<IActionResult> DeactivateCourseAsync([FromRoute] Guid id)
     {
-        await _service.DeactivateCourseAsync(id);
+        await service.DeactivateCourseAsync(id);
 
         return NoContent();
     }
@@ -138,7 +120,7 @@ public class CoursesController: ControllerBase
             UserId = request.UserId
         };
 
-        await _service.DisenrollAsync(enrollment);
+        await service.DisenrollAsync(enrollment);
 
         return NoContent();
     }
@@ -146,7 +128,7 @@ public class CoursesController: ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCourseAsync([FromRoute] Guid id)
     {
-        await _service.DeleteCourseAsync(id);
+        await service.DeleteCourseAsync(id);
 
         return NoContent();
     }

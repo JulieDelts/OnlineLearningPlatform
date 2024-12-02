@@ -1,11 +1,6 @@
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using OnlineLearningPlatform.BLL;
-using OnlineLearningPlatform.BLL.Interfaces;
+using OnlineLearningPlatform.BLL.Configuration;
 using OnlineLearningPlatform.Configuration;
-using OnlineLearningPlatform.DAL;
-using OnlineLearningPlatform.DAL.Interfaces;
-using OnlineLearningPlatform.Models.Requests;
+using OnlineLearningPlatform.DAL.Configuration;
 
 namespace OnlineLearningPlatform;
 
@@ -15,29 +10,24 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddAuth();
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.secrets.json", optional: true, reloadOnChange: true)
+            .AddCommandLine(args)
+            .AddEnvironmentVariables()
+            .Build();
 
-        builder.Services.AddScoped<ICoursesService, CoursesService>();
-        builder.Services.AddScoped<IUsersService, UsersService>();
+        var configuration = builder.Configuration;
 
-        builder.Services.AddScoped<ICoursesRepository, CoursesRepository>();
-        builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-        builder.Services.AddScoped<IEnrollmentsRepository, EnrollmentsRepository>();
-        builder.Services.AddScoped<OnlineLearningPlatformContext>();
-
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        builder.Services.AddFluentValidationAutoValidation();
-        builder.Services.AddValidatorsFromAssemblyContaining<CreateCourseRequest>();
+        builder.Services.AddDALServices(configuration);
+        builder.Services.AddBLLServices();
+        builder.Services.AddAPIServices();
 
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.UseHttpsRedirection();
 

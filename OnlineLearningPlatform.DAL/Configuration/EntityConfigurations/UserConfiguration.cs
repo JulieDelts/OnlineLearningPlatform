@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineLearningPlatform.DAL.DTOs;
 
-namespace OnlineLearningPlatform.DAL.EntityConfigurations;
+namespace OnlineLearningPlatform.DAL.Configuration.EntityConfigurations;
 
 internal class UserConfiguration : IEntityTypeConfiguration<User>
 {
