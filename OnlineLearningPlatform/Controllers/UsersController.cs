@@ -11,14 +11,19 @@ namespace OnlineLearningPlatform.Controllers;
 [ApiController]
 [Route("api/users")]
 [Authorize]
-public class UsersController(IUsersService service, IMapper mapper) : ControllerBase
+public class UsersController(
+    IUsersService usersService,
+    ICoursesService coursesService,
+    IEnrollmentsService enrollmentsService,
+    IMapper mapper
+    ) : ControllerBase
 {
     [HttpPost, AllowAnonymous]
     public async Task<ActionResult<Guid>> RegisterAsync([FromBody] RegisterRequest request)
     {
         var registrationModel = mapper.Map<UserRegistrationModel>(request);
 
-        var newId = await service.RegisterAsync(registrationModel);
+        var newId = await usersService.RegisterAsync(registrationModel);
 
         return Ok(newId);
     }
@@ -26,7 +31,7 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     [HttpPost("login"), AllowAnonymous]
     public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequest request)
     {
-        var token = await service.AuthenticateAsync(request.Login, request.Password);
+        var token = await usersService.AuthenticateAsync(request.Login, request.Password);
 
         return Ok(token);
     }
@@ -34,7 +39,7 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     [HttpGet]
     public async Task<ActionResult<List<UserResponse>>> GetUsersAsync()
     {
-        var users = await service.GetAllUsersAsync();
+        var users = await usersService.GetAllUsersAsync();
 
         var response = mapper.Map<List<UserResponse>>(users);
 
@@ -44,9 +49,29 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     [HttpGet("{id}")]
     public async Task<ActionResult<ExtendedUserResponse>> GetUserByIdAsync([FromRoute] Guid id)
     {
-        var user = await service.GetUserByIdAsync(id);
+        var user = await usersService.GetUserByIdAsync(id);
 
         var response = mapper.Map<ExtendedUserResponse>(user);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id}/taught-courses")]
+    public async Task<ActionResult<List<CourseResponse>>> GetTaughtCoursesByUserIdAsync([FromRoute] Guid id)
+    {
+        var courses = await coursesService.GetTaughtCoursesByUserIdAsync(id);
+
+        var response = mapper.Map<List<CourseResponse>>(courses);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id}/enrollments")]
+    public async Task<ActionResult<List<CourseEnrollmentResponse>>> GetEnrollmentsByUserIdAsync([FromRoute] Guid id)
+    {
+        var enrollments = await enrollmentsService.GetEnrollmentsByUserIdAsync(id);
+
+        var response = mapper.Map<List<CourseEnrollmentResponse>>(enrollments);
 
         return Ok(response);
     }
@@ -56,7 +81,7 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     {
         var profile = mapper.Map<UpdateUserProfileModel>(request);
 
-        await service.UpdateProfileAsync(id, profile);
+        await usersService.UpdateProfileAsync(id, profile);
 
         return NoContent();
     }
@@ -64,7 +89,7 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     [HttpPatch("{id}/role")]
     public async Task<IActionResult> UpdateUserRoleAsync([FromRoute] Guid id, [FromBody] UpdateUserRoleRequest request)
     {
-        await service.UpdateRoleAsync(id, request.Role);
+        await usersService.UpdateRoleAsync(id, request.Role);
 
         return NoContent();
     }
@@ -74,7 +99,7 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     {
         var passwordModel = mapper.Map<UpdateUserPasswordModel>(request);
 
-        await service.UpdatePasswordAsync(id, passwordModel);
+        await usersService.UpdatePasswordAsync(id, passwordModel);
 
         return NoContent();
     }
@@ -82,7 +107,7 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     [HttpPatch("{id}/deactivate")]
     public async Task<IActionResult> DeactivateUserAsync([FromRoute] Guid id)
     {
-        await service.DeactivateUserAsync(id);
+        await usersService.DeactivateUserAsync(id);
 
         return NoContent();
     }
@@ -90,7 +115,7 @@ public class UsersController(IUsersService service, IMapper mapper) : Controller
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid id)
     {
-        await service.DeleteUserAsync(id);
+        await usersService.DeleteUserAsync(id);
 
         return NoContent();
     }

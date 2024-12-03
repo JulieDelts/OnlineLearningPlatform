@@ -16,13 +16,5 @@ public interface ICoursesService
 
     Task DeleteCourseAsync(Guid id);
 
-    Task EnrollAsync(Guid courseId, Guid userId);
-
-    Task ReviewCourseAsync(EnrollmentManagementModel enrollment, string review);
-
-    Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade);
-
-    Task DisenrollAsync(EnrollmentManagementModel enrollment);
-
-    Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance);
+    Task<List<CourseModel>> GetTaughtCoursesByUserIdAsync(Guid id);
 }

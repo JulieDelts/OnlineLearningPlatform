@@ -68,14 +68,6 @@ public class UsersService(IUsersRepository repository, IMapper mapper) : IUsersS
 
         var user = mapper.Map<ExtendedUserModel>(userDTO);
 
-        List<CourseModel> courses = mapper.Map<List<CourseModel>>(userDTO.TaughtCourses);
-
-        user.TaughtCourses = courses;
-
-        List<CourseEnrollmentModel> enrollments = mapper.Map<List<CourseEnrollmentModel>>(userDTO.Enrollments);
-
-        user.Enrollments = enrollments;
-
         return user;
     }
 

@@ -10,6 +10,7 @@ public static class ServicesConfiguration
     {
         services.AddScoped<ICoursesService, CoursesService>();
         services.AddScoped<IUsersService, UsersService>();
+        services.AddScoped<IEnrollmentsService, EnrollmentsService>();
         services.AddAutoMapper(typeof(BLLUserMapperProfile).Assembly);
     }
 }

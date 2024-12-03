@@ -10,8 +10,4 @@ public class ExtendedUserModel: UserModel
     public Role Role { get; set; }
 
     public string Phone { get; set; }
-
-    public List<CourseModel> TaughtCourses { get; set; }
-
-    public List<CourseEnrollmentModel> Enrollments { get; set; }
 }
