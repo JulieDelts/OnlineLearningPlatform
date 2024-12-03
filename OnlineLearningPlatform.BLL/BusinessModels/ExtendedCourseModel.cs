@@ -8,6 +8,4 @@ public class ExtendedCourseModel: CourseModel
     public int NumberOfLessons { get; set; }
 
     public UserModel Teacher { get; set; }
-
-    public List<UserModel> Students { get; set; }
 }

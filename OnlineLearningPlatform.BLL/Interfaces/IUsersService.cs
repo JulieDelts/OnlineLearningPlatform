@@ -22,4 +22,6 @@ public interface IUsersService
     Task DeactivateUserAsync(Guid id);
 
     Task DeleteUserAsync(Guid id);
+
+    Task<List<UserModel>> GetStudentsByCourseIdAsync(Guid id);
 }
