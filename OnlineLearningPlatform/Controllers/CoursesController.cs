@@ -11,14 +11,18 @@ namespace OnlineLearningPlatform.Controllers;
 [ApiController]
 [Route("api/courses")]
 [Authorize]
-public class CoursesController(ICoursesService service, IMapper mapper) : ControllerBase
+public class CoursesController(
+    ICoursesService coursesService,
+    IEnrollmentsService enrollmentsService,
+    IMapper mapper
+    ) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<Guid>> CreateCourseAsync([FromBody] CreateCourseRequest request)
     {
         var courseModel = mapper.Map<CreateCourseModel>(request);
 
-        var newCourseId = await service.CreateCourseAsync(courseModel);
+        var newCourseId = await coursesService.CreateCourseAsync(courseModel);
 
         return Ok(newCourseId);
     }
@@ -26,7 +30,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
     [HttpPost("{id}/enroll")]
     public async Task<IActionResult> EnrollAsync([FromRoute] Guid id, [FromBody] EnrollmentManagementRequest request)
     {
-        await service.EnrollAsync(id, request.UserId);
+        await enrollmentsService.EnrollAsync(id, request.UserId);
 
         return NoContent();
     }
@@ -34,7 +38,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
     [HttpGet]
     public async Task<ActionResult<List<CourseResponse>>> GetCoursesAsync()
     {
-        var courseModels = await service.GetAllCoursesAsync();
+        var courseModels = await coursesService.GetAllCoursesAsync();
 
         var courses = mapper.Map<List<CourseResponse>>(courseModels);
 
@@ -44,7 +48,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
     [HttpGet("{id}")]
     public async Task<ActionResult<ExtendedCourseResponse>> GetCourseByIdAsync([FromRoute] Guid id)
     {
-        var courseModel = await service.GetCourseByIdAsync(id);
+        var courseModel = await coursesService.GetCourseByIdAsync(id);
 
         var course = mapper.Map<ExtendedCourseResponse>(courseModel);
 
@@ -56,7 +60,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
     {
         var courseModel = mapper.Map<UpdateCourseModel>(request);
 
-        await service.UpdateCourseAsync(id, courseModel);
+        await coursesService.UpdateCourseAsync(id, courseModel);
 
         return NoContent();
     }
@@ -70,7 +74,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
             UserId = request.UserId
         };
 
-        await service.GradeStudentAsync(enrollment, request.Grade);
+        await enrollmentsService.GradeStudentAsync(enrollment, request.Grade);
 
         return NoContent();
     }
@@ -84,7 +88,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
             UserId = request.UserId
         };
 
-        await service.ControlAttendanceAsync(enrollment, request.Attendance);
+        await enrollmentsService.ControlAttendanceAsync(enrollment, request.Attendance);
 
         return NoContent();
     }
@@ -98,7 +102,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
             UserId = request.UserId
         };
 
-        await service.ReviewCourseAsync(enrollment, request.Review);
+        await enrollmentsService.ReviewCourseAsync(enrollment, request.Review);
 
         return NoContent();
     }
@@ -106,7 +110,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
     [HttpPatch("{id}/deactivate")]
     public async Task<IActionResult> DeactivateCourseAsync([FromRoute] Guid id)
     {
-        await service.DeactivateCourseAsync(id);
+        await coursesService.DeactivateCourseAsync(id);
 
         return NoContent();
     }
@@ -120,7 +124,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
             UserId = request.UserId
         };
 
-        await service.DisenrollAsync(enrollment);
+        await enrollmentsService.DisenrollAsync(enrollment);
 
         return NoContent();
     }
@@ -128,7 +132,7 @@ public class CoursesController(ICoursesService service, IMapper mapper) : Contro
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCourseAsync([FromRoute] Guid id)
     {
-        await service.DeleteCourseAsync(id);
+        await coursesService.DeleteCourseAsync(id);
 
         return NoContent();
     }
