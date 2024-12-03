@@ -14,7 +14,7 @@ public class EnrollmentsRepository(OnlineLearningPlatformContext context) : IEnr
 
     public async Task<Enrollment> GetEnrollmentByIdAsync(Guid courseId, Guid userId)
     {
-        return await context.Enrollments.Where(en => en.User.Id == userId && en.Course.Id == courseId).SingleOrDefaultAsync();
+        return await context.Enrollments.Where(en => en.User.Id == userId && en.Course.Id == courseId).Include(en => en.Course).SingleOrDefaultAsync();
     }
 
     public async Task ReviewCourseAsync(Enrollment enrollment, string review)

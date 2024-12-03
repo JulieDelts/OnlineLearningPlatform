@@ -27,6 +27,9 @@ public class EnrollmentsService(
         if (userDTO == null)
             throw new EntityNotFoundException($"User with id {userId} was not found.");
 
+        if (userDTO.Role != Role.Student)
+            throw new EntityConflictException("The role of the user is not correct.");
+
         var enrollmentDTO = await enrollmentsRepository.GetEnrollmentByIdAsync(courseId, userId);
 
         if (enrollmentDTO != null)
@@ -43,15 +46,15 @@ public class EnrollmentsService(
 
     public async Task<List<CourseEnrollmentModel>> GetEnrollmentsByUserIdAsync(Guid id)
     {
-        var user = await usersRepository.GetUserByIdWithFullInfoAsync(id);
+        var userDTO = await usersRepository.GetUserByIdWithFullInfoAsync(id);
 
-        if (user == null)
+        if (userDTO == null)
             throw new EntityNotFoundException($"User with id {id} was not found.");
 
-        if (user.Role != Role.Student)
+        if (userDTO.Role != Role.Student)
             throw new EntityConflictException("The role of the user is not correct.");
 
-        var enrollments = mapper.Map<List<CourseEnrollmentModel>>(user.Enrollments);
+        var enrollments = mapper.Map<List<CourseEnrollmentModel>>(userDTO.Enrollments);
 
         return enrollments;
     }
@@ -62,6 +65,11 @@ public class EnrollmentsService(
 
         if (enrollmentDTO == null)
             throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+
+        var numberOfLesons = enrollmentDTO.Course.NumberOfLessons;
+
+        if (attendance < 0 || attendance > numberOfLesons)
+            throw new ArgumentException("The attendance is out of the acceptable range.");
 
         await enrollmentsRepository.ControlAttendanceAsync(enrollmentDTO, attendance);
     }

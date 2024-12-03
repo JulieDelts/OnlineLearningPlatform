@@ -22,13 +22,17 @@ internal class ExceptionMiddleware
         {
             await HandleEntityNotFoundExceptionAsync(httpContext, ex);
         }
-        catch(EntityConflictException ex)
+        catch (EntityConflictException ex)
         {
             await HandleEntityConflictExceptionAsync(httpContext, ex);
         }
-        catch(WrongCredentialsException ex)
+        catch (WrongCredentialsException ex)
         {
             await HandleWrongCredentialsExceptionAsync(httpContext, ex);
+        }
+        catch (ArgumentException ex)
+        {
+            await HandleArgumentExceptionAsync(httpContext, ex);
         }
         catch (Exception ex)
         {
@@ -51,6 +55,17 @@ internal class ExceptionMiddleware
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+        await context.Response.WriteAsync(new ErrorDetails()
+        {
+            StatusCode = context.Response.StatusCode,
+            Message = exception.Message
+        }.ToString());
+    }
+
+    private async Task HandleArgumentExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         await context.Response.WriteAsync(new ErrorDetails()
         {
             StatusCode = context.Response.StatusCode,

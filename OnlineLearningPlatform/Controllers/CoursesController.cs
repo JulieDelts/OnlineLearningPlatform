@@ -12,6 +12,7 @@ namespace OnlineLearningPlatform.Controllers;
 [Route("api/courses")]
 [Authorize]
 public class CoursesController(
+    IUsersService usersService,
     ICoursesService coursesService,
     IEnrollmentsService enrollmentsService,
     IMapper mapper
@@ -43,6 +44,16 @@ public class CoursesController(
         var courses = mapper.Map<List<CourseResponse>>(courseModels);
 
         return Ok(courses);
+    }
+
+    [HttpGet("{id}/students")]
+    public async Task<ActionResult<List<UserResponse>>> GetStudentsByCourseIdAsync([FromRoute] Guid id)
+    {
+        var userModels = await usersService.GetStudentsByCourseIdAsync(id);
+
+        var students = mapper.Map<List<UserResponse>>(userModels);
+
+        return Ok(students);
     }
 
     [HttpGet("{id}")]

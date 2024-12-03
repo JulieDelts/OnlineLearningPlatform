@@ -62,10 +62,6 @@ public class CoursesService(
             throw new EntityNotFoundException($"Course with id {id} was not found.");
 
         var course = mapper.Map<ExtendedCourseModel>(courseDTO);
-
-        var students = mapper.Map<List<UserModel>>(courseDTO.Enrollments.Select(e => e.User));
-
-        course.Students = students;
         
         return course;
     }
