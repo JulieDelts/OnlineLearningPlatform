@@ -6,7 +6,7 @@ public interface ICoursesService
 {
     Task<Guid> CreateCourseAsync(CreateCourseModel course);
 
-    Task<List<CourseModel>> GetAllCoursesAsync();
+    Task<List<CourseModel>> GetAllActiveCoursesAsync();
 
     Task<ExtendedCourseModel> GetCourseByIdAsync(Guid id);
 
@@ -16,5 +16,5 @@ public interface ICoursesService
 
     Task DeleteCourseAsync(Guid id);
 
-    Task<List<CourseModel>> GetTaughtCoursesByUserIdAsync(Guid id);
+    Task<List<UserEnrollmentModel>> GetEnrollmentsByCourseIdAsync(Guid id);
 }

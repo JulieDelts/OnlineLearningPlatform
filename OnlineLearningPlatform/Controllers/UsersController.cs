@@ -13,8 +13,6 @@ namespace OnlineLearningPlatform.Controllers;
 [Authorize]
 public class UsersController(
     IUsersService usersService,
-    ICoursesService coursesService,
-    IEnrollmentsService enrollmentsService,
     IMapper mapper
     ) : ControllerBase
 {
@@ -39,7 +37,7 @@ public class UsersController(
     [HttpGet]
     public async Task<ActionResult<List<UserResponse>>> GetUsersAsync()
     {
-        var users = await usersService.GetAllUsersAsync();
+        var users = await usersService.GetAllActiveUsersAsync();
 
         var response = mapper.Map<List<UserResponse>>(users);
 
@@ -59,7 +57,7 @@ public class UsersController(
     [HttpGet("{id}/taught-courses")]
     public async Task<ActionResult<List<CourseResponse>>> GetTaughtCoursesByUserIdAsync([FromRoute] Guid id)
     {
-        var courses = await coursesService.GetTaughtCoursesByUserIdAsync(id);
+        var courses = await usersService.GetTaughtCoursesByUserIdAsync(id);
 
         var response = mapper.Map<List<CourseResponse>>(courses);
 
@@ -69,7 +67,7 @@ public class UsersController(
     [HttpGet("{id}/enrollments")]
     public async Task<ActionResult<List<CourseEnrollmentResponse>>> GetEnrollmentsByUserIdAsync([FromRoute] Guid id)
     {
-        var enrollments = await enrollmentsService.GetEnrollmentsByUserIdAsync(id);
+        var enrollments = await usersService.GetEnrollmentsByUserIdAsync(id);
 
         var response = mapper.Map<List<CourseEnrollmentResponse>>(enrollments);
 

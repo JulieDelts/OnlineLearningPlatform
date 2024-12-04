@@ -7,5 +7,7 @@ public class ExtendedCourseResponse: CourseResponse
     public int NumberOfLessons { get; set; }
 
     public UserResponse Teacher { get; set; }
+
+    public bool IsDeactivated { get; set; }
 }
 

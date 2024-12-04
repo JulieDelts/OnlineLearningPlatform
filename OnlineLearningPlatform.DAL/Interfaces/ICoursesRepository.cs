@@ -10,7 +10,7 @@ public interface ICoursesRepository
 
     Task DeleteCourseAsync(Course course);
 
-    Task<List<Course>> GetAllCoursesAsync();
+    Task<List<Course>> GetAllActiveCoursesAsync();
 
     Task<Course> GetCourseByIdWithFullInfoAsync(Guid id);
 
