@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
 
@@ -15,7 +14,7 @@ public class CoursesRepository(OnlineLearningPlatformContext context) : ICourses
         return course.Id;
     }
 
-    public async Task<List<Course>> GetAllCoursesAsync()
+    public async Task<List<Course>> GetAllActiveCoursesAsync()
     {
         return await context.Courses.Where(c => c.IsDeactivated == false).ToListAsync();
     }

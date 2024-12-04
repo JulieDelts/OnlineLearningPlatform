@@ -18,51 +18,54 @@ public class CoursesService(
     {
         var courseDTO = mapper.Map<Course>(course);
 
-        var user = await usersRepository.GetUserByIdAsync(course.TeacherId);
+        var userDTO = await usersRepository.GetUserByIdAsync(course.TeacherId);
 
-        if (user.Role != Role.Teacher)
+        if (userDTO.Role != Role.Teacher)
             throw new EntityConflictException("The role of the user is not correct.");
 
-        courseDTO.Teacher = user;
+        if (userDTO.IsDeactivated)
+            throw new EntityConflictException($"User with id {userDTO.Id} is deactivated.");
+
+        courseDTO.Teacher = userDTO;
 
         var id = await coursesRepository.CreateCourseAsync(courseDTO);
 
         return id;
     }
 
-    public async Task<List<CourseModel>> GetAllCoursesAsync()
-    { 
-        var courseDTOs = await coursesRepository.GetAllCoursesAsync();
+    public async Task<List<CourseModel>> GetAllActiveCoursesAsync()
+    {
+        var courseDTOs = await coursesRepository.GetAllActiveCoursesAsync();
 
         var courses = mapper.Map<List<CourseModel>>(courseDTOs);
 
         return courses;
     }
 
-    public async Task<List<CourseModel>> GetTaughtCoursesByUserIdAsync(Guid id)
+    //TODO
+    public async Task<List<UserEnrollmentModel>> GetEnrollmentsByCourseIdAsync(Guid id)
     {
-        var user = await usersRepository.GetUserByIdWithFullInfoAsync(id);
+        var courseDTO = await coursesRepository.GetCourseByIdWithFullInfoAsync(id);
 
-        if (user == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        if (courseDTO == null)
+            throw new EntityNotFoundException($"Course with id {id} was not found");
 
-        if (user.Role != Role.Teacher)
-            throw new EntityConflictException("The role of the user is not correct.");
+        var enrollmentDTOs = courseDTO.Enrollments.ToList();
 
-        var courses = mapper.Map<List<CourseModel>>(user.TaughtCourses);
+        var userEnrollments = mapper.Map<List<UserEnrollmentModel>>(enrollmentDTOs);
 
-        return courses;
+        return userEnrollments;
     }
 
     public async Task<ExtendedCourseModel> GetCourseByIdAsync(Guid id)
-    { 
+    {
         var courseDTO = await coursesRepository.GetCourseByIdWithFullInfoAsync(id);
 
         if (courseDTO == null)
             throw new EntityNotFoundException($"Course with id {id} was not found.");
 
         var course = mapper.Map<ExtendedCourseModel>(courseDTO);
-        
+
         return course;
     }
 
@@ -72,6 +75,9 @@ public class CoursesService(
 
         if (courseDTO == null)
             throw new EntityNotFoundException($"Course with id {id} was not found.");
+
+        if (courseDTO.IsDeactivated)
+            throw new EntityConflictException($"Course with id {id} is deactivated.");
 
         var courseUpdate = mapper.Map<Course>(course);
 

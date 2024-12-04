@@ -9,4 +9,6 @@ public class ExtendedUserResponse: UserResponse
     public Role Role { get; set; }
 
     public string Phone { get; set; }
+
+    public bool IsDeactivated { get; set; }
 }

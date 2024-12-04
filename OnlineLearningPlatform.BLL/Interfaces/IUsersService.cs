@@ -11,7 +11,7 @@ public interface IUsersService
 
     Task<ExtendedUserModel> GetUserByIdAsync(Guid id);
 
-    Task<List<UserModel>> GetAllUsersAsync();
+    Task<List<UserModel>> GetAllActiveUsersAsync();
 
     Task UpdateRoleAsync(Guid id, Role role);
 
@@ -23,5 +23,7 @@ public interface IUsersService
 
     Task DeleteUserAsync(Guid id);
 
-    Task<List<UserModel>> GetStudentsByCourseIdAsync(Guid id);
+    Task<List<CourseModel>> GetTaughtCoursesByUserIdAsync(Guid id);
+
+    Task<List<CourseEnrollmentModel>> GetEnrollmentsByUserIdAsync(Guid id);
 }

@@ -20,7 +20,7 @@ public class UsersRepository(OnlineLearningPlatformContext context) : IUsersRepo
         return await context.Users.Where(u => u.Login == login).SingleOrDefaultAsync();
     }
 
-    public async Task<List<User>> GetAllUsersAsync()
+    public async Task<List<User>> GetAllActiveUsersAsync()
     {
         return await context.Users.Where(u => u.IsDeactivated == false).ToListAsync();
     }

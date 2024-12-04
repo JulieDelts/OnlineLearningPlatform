@@ -8,9 +8,9 @@ internal class BLLUserMapperProfile: Profile
 {
     public BLLUserMapperProfile()
     {
-        CreateMap<UserRegistrationModel, User>();
         CreateMap<User, UserModel>();
         CreateMap<User, ExtendedUserModel>();
+        CreateMap<UserRegistrationModel, User>();
         CreateMap<UpdateUserProfileModel, User>();
     }
 }

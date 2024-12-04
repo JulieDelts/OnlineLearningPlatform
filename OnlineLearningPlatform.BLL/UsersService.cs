@@ -14,7 +14,6 @@ namespace OnlineLearningPlatform.BLL;
 
 public class UsersService(
     IUsersRepository usersRepository,
-    ICoursesRepository coursesRepository,
     IMapper mapper
     ) : IUsersService
 {
@@ -52,27 +51,43 @@ public class UsersService(
         }
     }
 
-    public async Task<List<UserModel>> GetAllUsersAsync()
+    public async Task<List<UserModel>> GetAllActiveUsersAsync()
     {
-        var userDTOs = await usersRepository.GetAllUsersAsync();
+        var userDTOs = await usersRepository.GetAllActiveUsersAsync();
 
         var users = mapper.Map<List<UserModel>>(userDTOs);
 
         return users;
     }
 
-    public async Task<List<UserModel>> GetStudentsByCourseIdAsync(Guid id)
-    { 
-        var courseDTO = await coursesRepository.GetCourseByIdWithFullInfoAsync(id);
+    public async Task<List<CourseModel>> GetTaughtCoursesByUserIdAsync(Guid id)
+    {
+        var user = await usersRepository.GetUserByIdWithFullInfoAsync(id);
 
-        if (courseDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found");
+        if (user == null)
+            throw new EntityNotFoundException($"User with id {id} was not found.");
 
-        var userDTOs = courseDTO.Enrollments.Select(en => en.User).ToList();
+        if (user.Role != Role.Teacher)
+            throw new EntityConflictException("The role of the user is not correct.");
 
-        var users = mapper.Map<List<UserModel>>(userDTOs);
+        var courses = mapper.Map<List<CourseModel>>(user.TaughtCourses);
 
-        return users;
+        return courses;
+    }
+
+    public async Task<List<CourseEnrollmentModel>> GetEnrollmentsByUserIdAsync(Guid id)
+    {
+        var userDTO = await usersRepository.GetUserByIdWithFullInfoAsync(id);
+
+        if (userDTO == null)
+            throw new EntityNotFoundException($"User with id {id} was not found.");
+
+        if (userDTO.Role != Role.Student)
+            throw new EntityConflictException("The role of the user is not correct.");
+
+        var enrollments = mapper.Map<List<CourseEnrollmentModel>>(userDTO.Enrollments);
+
+        return enrollments;
     }
 
     public async Task<ExtendedUserModel> GetUserByIdAsync(Guid id)
@@ -93,6 +108,9 @@ public class UsersService(
 
         if (userDTO == null)
             throw new EntityNotFoundException($"User with id {id} was not found.");
+
+        if (userDTO.IsDeactivated)
+            throw new EntityConflictException($"User with id {id} is deactivated.");
 
         if (CheckPassword(passwordModel.CurrentPassword, userDTO.Password))
         {
@@ -115,6 +133,9 @@ public class UsersService(
         if (userDTO == null)
             throw new EntityNotFoundException($"User with id {id} was not found.");
 
+        if (userDTO.IsDeactivated)
+            throw new EntityConflictException($"User with id {id} is deactivated.");
+
         await usersRepository.UpdateProfileAsync(userDTO, userProfileDTO);
     }
 
@@ -125,8 +146,11 @@ public class UsersService(
         if (userDTO == null)
             throw new EntityNotFoundException($"User with id {id} was not found.");
 
+        if (userDTO.IsDeactivated)
+            throw new EntityConflictException($"User with id {id} is deactivated.");
+
         if (userDTO.Role != Role.Student || userDTO.Enrollments.Count > 0)
-            throw new EntityConflictException("The user does not satisfy the requirements.");
+            throw new EntityConflictException($"User with id {id} does not satisfy the requirements.");
 
         await usersRepository.UpdateRoleAsync(userDTO, role);
     }

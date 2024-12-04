@@ -11,8 +11,9 @@ internal class APICourseMapperProfile: Profile
     {
         CreateMap<CourseModel, CourseResponse>();
         CreateMap<CourseEnrollmentModel, CourseEnrollmentResponse>();
+        CreateMap<UserEnrollmentModel, UserEnrollmentResponse>();
+        CreateMap<ExtendedCourseModel, ExtendedCourseResponse>();
         CreateMap<CreateCourseRequest, CreateCourseModel>();
         CreateMap<UpdateCourseRequest, UpdateCourseModel>();
-        CreateMap<ExtendedCourseModel, ExtendedCourseResponse>();
     }
 }

@@ -11,7 +11,7 @@ public interface IUsersRepository
 
     Task DeleteUserAsync(User user);
 
-    Task<List<User>> GetAllUsersAsync();
+    Task<List<User>> GetAllActiveUsersAsync();
 
     Task<User> GetUserByIdWithFullInfoAsync(Guid id);
 
