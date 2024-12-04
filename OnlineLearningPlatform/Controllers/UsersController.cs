@@ -35,7 +35,7 @@ public class UsersController(
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<UserResponse>>> GetUsersAsync()
+    public async Task<ActionResult<List<UserResponse>>> GetAllActiveUsersAsync()
     {
         var users = await usersService.GetAllActiveUsersAsync();
 

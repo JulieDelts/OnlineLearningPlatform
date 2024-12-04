@@ -36,7 +36,7 @@ public class CoursesController(
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CourseResponse>>> GetCoursesAsync()
+    public async Task<ActionResult<List<CourseResponse>>> GetActiveCoursesAsync()
     {
         var courseModels = await coursesService.GetAllActiveCoursesAsync();
 
