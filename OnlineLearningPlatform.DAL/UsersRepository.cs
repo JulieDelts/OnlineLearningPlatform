@@ -17,7 +17,7 @@ public class UsersRepository(OnlineLearningPlatformContext context) : IUsersRepo
 
     public async Task<User?> GetUserByLoginAsync(string login)
     {
-        return await context.Users.Where(u => u.Login == login).SingleOrDefaultAsync();
+        return await context.Users.SingleOrDefaultAsync(u => u.Login == login);
     }
 
     public async Task<List<User>> GetAllActiveUsersAsync()
@@ -25,15 +25,14 @@ public class UsersRepository(OnlineLearningPlatformContext context) : IUsersRepo
         return await context.Users.Where(u => u.IsDeactivated == false).ToListAsync();
     }
 
-    public async Task<User> GetUserByIdWithFullInfoAsync(Guid id)
-    {
-        return await context.Users.Where(s => s.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.Course).Include(u => u.TaughtCourses).SingleOrDefaultAsync();
-    }
+    public async Task<User?> GetUserByIdWithFullInfoAsync(Guid id) => 
+        await context.Users
+            .Include(u => u.Enrollments)
+                .ThenInclude(en => en.Course)
+            .Include(u => u.TaughtCourses)
+            .SingleOrDefaultAsync(s => s.Id == id);
 
-    public async Task<User> GetUserByIdAsync(Guid id)
-    {
-        return await context.Users.Where(s => s.Id == id).SingleOrDefaultAsync();
-    }
+    public async Task<User?> GetUserByIdAsync(Guid id) => await context.Users.SingleOrDefaultAsync(s => s.Id == id);
 
     public async Task UpdateProfileAsync(User user, User userUpdate)
     {

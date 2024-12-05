@@ -13,9 +13,9 @@ public interface IUsersRepository
 
     Task<List<User>> GetAllActiveUsersAsync();
 
-    Task<User> GetUserByIdWithFullInfoAsync(Guid id);
+    Task<User?> GetUserByIdWithFullInfoAsync(Guid id);
 
-    Task<User> GetUserByIdAsync(Guid id);
+    Task<User?> GetUserByIdAsync(Guid id);
 
     Task<Guid> RegisterAsync(User user);
 
