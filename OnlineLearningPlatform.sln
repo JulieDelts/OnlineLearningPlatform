@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform", "OnlineLearningPlatform\OnlineLearningPlatform.csproj", "{525F4CBC-612D-4385-8B3B-200B065ECE00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineLearningPlatform", "OnlineLearningPlatform\OnlineLearningPlatform.csproj", "{525F4CBC-612D-4385-8B3B-200B065ECE00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.Core", "OnlineLearningPlatform.Core\OnlineLearningPlatform.Core.csproj", "{A2E30BC0-0C8C-4014-8A81-0C0CE41510B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineLearningPlatform.Core", "OnlineLearningPlatform.Core\OnlineLearningPlatform.Core.csproj", "{A2E30BC0-0C8C-4014-8A81-0C0CE41510B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.DAL", "OnlineLearningPlatform.DAL\OnlineLearningPlatform.DAL.csproj", "{E39E272D-C1DB-426B-87AF-93BD04126680}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineLearningPlatform.DAL", "OnlineLearningPlatform.DAL\OnlineLearningPlatform.DAL.csproj", "{E39E272D-C1DB-426B-87AF-93BD04126680}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.BLL", "OnlineLearningPlatform.BLL\OnlineLearningPlatform.BLL.csproj", "{11453F22-8438-4552-A34C-0B53DC22CEFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineLearningPlatform.BLL", "OnlineLearningPlatform.BLL\OnlineLearningPlatform.BLL.csproj", "{11453F22-8438-4552-A34C-0B53DC22CEFC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{97AF85E6-3187-4448-906B-3AA17E702542}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4DD7AFC0-BAA4-4F15-91E0-D3CE0EA4467A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.BLL.Tests", "OnlineLearningPlatform.BLL.Tests\OnlineLearningPlatform.BLL.Tests.csproj", "{8B7CED98-C4D4-49D3-9FBE-E677DCCB553E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +39,16 @@ Global
 		{11453F22-8438-4552-A34C-0B53DC22CEFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11453F22-8438-4552-A34C-0B53DC22CEFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11453F22-8438-4552-A34C-0B53DC22CEFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B7CED98-C4D4-49D3-9FBE-E677DCCB553E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B7CED98-C4D4-49D3-9FBE-E677DCCB553E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B7CED98-C4D4-49D3-9FBE-E677DCCB553E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B7CED98-C4D4-49D3-9FBE-E677DCCB553E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8B7CED98-C4D4-49D3-9FBE-E677DCCB553E} = {97AF85E6-3187-4448-906B-3AA17E702542}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5668F1C-D0CF-4A55-AEF9-F0E53C56E769}

@@ -22,7 +22,7 @@ public class User
 
     public bool IsDeactivated { get; set; }
 
-    public ICollection<Course>? TaughtCourses { get; set; }
+    public ICollection<Course> TaughtCourses { get; set; } = [];
 
-    public ICollection<Enrollment>? Enrollments { get; set; }
+    public ICollection<Enrollment> Enrollments { get; set; } = [];
 }
