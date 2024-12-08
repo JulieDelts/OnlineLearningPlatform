@@ -2,6 +2,7 @@
 using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.BLL.Exceptions;
 using OnlineLearningPlatform.BLL.Interfaces;
+using OnlineLearningPlatform.BLL.ServicesUtils;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
@@ -9,16 +10,17 @@ using OnlineLearningPlatform.DAL.Interfaces;
 namespace OnlineLearningPlatform.BLL;
 
 public class CoursesService(
-    IUsersRepository usersRepository,
     ICoursesRepository coursesRepository,
-    IMapper mapper
+    IMapper mapper,
+    CoursesUtils coursesUtils,
+    UsersUtils usersUtils
     ) : ICoursesService
 {
     public async Task<Guid> CreateCourseAsync(CreateCourseModel course)
     {
         var courseDTO = mapper.Map<Course>(course);
 
-        var userDTO = await usersRepository.GetUserByIdAsync(course.TeacherId);
+        var userDTO = await usersUtils.GetUserByIdAsync(course.TeacherId);
 
         if (userDTO.Role != Role.Teacher)
             throw new EntityConflictException("The role of the user is not correct.");
@@ -71,10 +73,7 @@ public class CoursesService(
 
     public async Task UpdateCourseAsync(Guid id, UpdateCourseModel course)
     {
-        var courseDTO = await coursesRepository.GetCourseByIdAsync(id);
-
-        if (courseDTO == null)
-            throw new EntityNotFoundException($"Course with id {id} was not found.");
+        var courseDTO = await coursesUtils.GetCourseByIdAsync(id);
 
         if (courseDTO.IsDeactivated)
             throw new EntityConflictException($"Course with id {id} is deactivated.");
@@ -86,20 +85,14 @@ public class CoursesService(
 
     public async Task DeactivateCourseAsync(Guid id)
     {
-        var courseDTO = await coursesRepository.GetCourseByIdAsync(id);
-
-        if (courseDTO == null)
-            throw new EntityNotFoundException($"Course with id {id} was not found.");
+        var courseDTO = await coursesUtils.GetCourseByIdAsync(id);
 
         await coursesRepository.DeactivateCourseAsync(courseDTO);
     }
 
     public async Task DeleteCourseAsync(Guid id)
     {
-        var courseDTO = await coursesRepository.GetCourseByIdAsync(id);
-
-        if (courseDTO == null)
-            throw new EntityNotFoundException($"Course with id {id} was not found.");
+        var courseDTO = await coursesUtils.GetCourseByIdAsync(id);
 
         await coursesRepository.DeleteCourseAsync(courseDTO);
     }
