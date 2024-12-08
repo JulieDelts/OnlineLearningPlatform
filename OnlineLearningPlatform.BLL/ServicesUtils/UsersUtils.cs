@@ -15,4 +15,14 @@ public class UsersUtils(IUsersRepository usersRepository)
 
         return userDTO;
     }
+
+    public async Task<User> GetUserFullInfoByIdAsync(Guid id)
+    {
+        var userDTO = await usersRepository.GetUserByIdWithFullInfoAsync(id);
+
+        if (userDTO == null)
+            throw new EntityNotFoundException($"User with id {id} was not found.");
+
+        return userDTO;
+    }
 }

@@ -61,17 +61,12 @@ public class CoursesServiceTests
     public void CreateCourseAsync_ValidModel_MappingSuccess()
     {
         // Arrange
-        var name = "TestCourse";
-        var description = "This is a test course.";
-        var numberOfLessons = 10;
-        var teacherId = Guid.NewGuid();
-
         var courseModel = new CreateCourseModel()
         {
-            Name = name,
-            Description = description,
-            NumberOfLessons = numberOfLessons,
-            TeacherId = teacherId
+            Name = "TestCourse",
+            Description = "This is a test course.",
+            NumberOfLessons = 10,
+            TeacherId = Guid.NewGuid()
         };
 
         //Act 
@@ -244,18 +239,13 @@ public class CoursesServiceTests
     public void GetFullCourseByIdAsync_ValidModel_MappingSuccess()
     {
         // Arrange
-        var name = "TestCourse";
-        var description = "This is a test course.";
-        var numberOfLessons = 20;
-        var teacherId = Guid.NewGuid();
-
         var courseDTO = new Course()
         {
             Id = Guid.NewGuid(),
-            Name = name,
-            Description = description,
-            NumberOfLessons = numberOfLessons,
-            TeacherId = teacherId,
+            Name = "TestCourse",
+            Description = "This is a test course.",
+            NumberOfLessons = 20,
+            TeacherId = Guid.NewGuid(),
             IsDeactivated = false,
             Teacher = new User()
             {
@@ -311,15 +301,11 @@ public class CoursesServiceTests
     public void UpdateCourseAsync_ValidModel_MappingSuccess()
     {
         // Arrange
-        var name = "NewCourseName";
-        var description = "This is a new course description.";
-        var numberOfLessons = 10;
-
         var courseModel = new UpdateCourseModel()
         {
-            Name = name,
-            Description = description,
-            NumberOfLessons = numberOfLessons
+            Name = "NewCourseName",
+            Description = "This is a new course description.",
+            NumberOfLessons = 10
         };
 
         //Act 

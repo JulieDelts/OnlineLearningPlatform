@@ -48,4 +48,36 @@ public class UsersUtilsTests
         // Assert
         Assert.Equal(message, exception.Message);
     }
+
+    [Fact]
+    public async Task GetUserFullInfoByIdAsync_ExistingUser_GetUserSuccess()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var user = new User() { Id = userId };
+        _usersRepositoryMock.Setup(t => t.GetUserByIdWithFullInfoAsync(userId)).ReturnsAsync(user);
+
+        // Act
+        await _sut.GetUserFullInfoByIdAsync(userId);
+
+        // Assert
+        _usersRepositoryMock.Verify(t =>
+            t.GetUserByIdWithFullInfoAsync(userId),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task GetUserFullInfoByIdAsync_NotExistingUserSent_EntityNotFoundExceptionThrown()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var message = $"User with id {userId} was not found.";
+
+        // Act
+        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async () => await _sut.GetUserFullInfoByIdAsync(userId));
+
+        // Assert
+        Assert.Equal(message, exception.Message);
+    }
 }
