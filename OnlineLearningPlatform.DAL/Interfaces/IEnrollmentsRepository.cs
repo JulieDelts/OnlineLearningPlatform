@@ -10,7 +10,7 @@ public interface IEnrollmentsRepository
 
     Task EnrollAsync(Enrollment enrollment);
 
-    Task<Enrollment> GetEnrollmentByIdAsync(Guid courseId, Guid userId);
+    Task<Enrollment?> GetEnrollmentByIdAsync(Guid courseId, Guid userId);
 
     Task GradeStudentAsync(Enrollment enrollment, int grade);
 

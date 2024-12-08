@@ -14,20 +14,17 @@ public class CoursesRepository(OnlineLearningPlatformContext context) : ICourses
         return course.Id;
     }
 
-    public async Task<List<Course>> GetAllActiveCoursesAsync()
-    {
-        return await context.Courses.Where(c => c.IsDeactivated == false).ToListAsync();
-    }
+    public async Task<List<Course>> GetAllActiveCoursesAsync() => await context.Courses.Where(c => c.IsDeactivated == false).ToListAsync();
 
-    public async Task<Course> GetCourseByIdWithFullInfoAsync(Guid id)
-    {
-        return await context.Courses.Where(c => c.Id == id).Include(u => u.Enrollments).ThenInclude(en => en.User).Include(u => u.Teacher).SingleOrDefaultAsync();
-    }
+    public async Task<Course?> GetCourseByIdWithFullInfoAsync(Guid id) =>
+        await context.Courses
+        .Include(u => u.Enrollments)
+            .ThenInclude(en => en.User)
+        .Include(u => u.Teacher)
+        .SingleOrDefaultAsync(c => c.Id == id);
+    
 
-    public async Task<Course> GetCourseByIdAsync(Guid id)
-    {
-        return await context.Courses.Where(c => c.Id == id).SingleOrDefaultAsync();
-    }
+    public async Task<Course?> GetCourseByIdAsync(Guid id) => await context.Courses.SingleOrDefaultAsync(c => c.Id == id);
 
     public async Task UpdateCourseAsync(Course course, Course courseUpdate)
     {
