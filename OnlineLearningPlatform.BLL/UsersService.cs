@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.BLL.Exceptions;
 using OnlineLearningPlatform.BLL.Interfaces;
+using OnlineLearningPlatform.BLL.ServicesUtils;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
@@ -14,7 +15,8 @@ namespace OnlineLearningPlatform.BLL;
 
 public class UsersService(
     IUsersRepository usersRepository,
-    IMapper mapper
+    IMapper mapper,
+    UsersUtils usersUtils
     ) : IUsersService
 {
     public async Task<Guid> RegisterAsync(UserRegistrationModel userToRegister)
@@ -104,10 +106,7 @@ public class UsersService(
 
     public async Task UpdatePasswordAsync(Guid id, UpdateUserPasswordModel passwordModel)
     {
-        var userDTO = await usersRepository.GetUserByIdAsync(id);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        var userDTO = await usersUtils.GetUserByIdAsync(id);
 
         if (userDTO.IsDeactivated)
             throw new EntityConflictException($"User with id {id} is deactivated.");
@@ -128,10 +127,7 @@ public class UsersService(
     {
         var userProfileDTO = mapper.Map<User>(profileModel);
 
-        var userDTO = await usersRepository.GetUserByIdAsync(id);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        var userDTO = await usersUtils.GetUserByIdAsync(id);
 
         if (userDTO.IsDeactivated)
             throw new EntityConflictException($"User with id {id} is deactivated.");
@@ -157,20 +153,14 @@ public class UsersService(
 
     public async Task DeactivateUserAsync(Guid id)
     {
-        var userDTO = await usersRepository.GetUserByIdAsync(id);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        var userDTO = await usersUtils.GetUserByIdAsync(id);
 
         await usersRepository.DeactivateUserAsync(userDTO);
     }
 
     public async Task DeleteUserAsync(Guid id)
     {
-        var userDTO = await usersRepository.GetUserByIdAsync(id);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        var userDTO = await usersUtils.GetUserByIdAsync(id);
 
         await usersRepository.DeleteUserAsync(userDTO);
     }

@@ -4,7 +4,7 @@ using OnlineLearningPlatform.DAL.DTOs;
 
 namespace OnlineLearningPlatform.BLL.Mappings;
 
-internal class BLLCourseMapperProfile: Profile
+public class BLLCourseMapperProfile: Profile
 {
     public BLLCourseMapperProfile() 
     {

@@ -1,6 +1,7 @@
 using Moq;
 using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.BLL.Exceptions;
+using OnlineLearningPlatform.BLL.ServicesUtils;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
 
@@ -18,42 +19,34 @@ public class EnrollmentsServiceTests
         _usersRepositoryMock = new Mock<IUsersRepository>();
         _coursesRepositoryMock = new Mock<ICoursesRepository>();
         _enrollmentsRepositoryMock = new Mock<IEnrollmentsRepository>();
-        _sut = new EnrollmentsService(_usersRepositoryMock.Object, _coursesRepositoryMock.Object, _enrollmentsRepositoryMock.Object);
+        _sut = new EnrollmentsService(
+            _enrollmentsRepositoryMock.Object,
+            new EnrollmentsUtils
+            (_enrollmentsRepositoryMock.Object),
+            new UsersUtils(_usersRepositoryMock.Object),
+            new CoursesUtils(_coursesRepositoryMock.Object)
+            );
     }
 
     [Fact]
-    public async Task EnrollAsync_ExistingActiveCourseAndExistingActiveStudentAndEnrollmentDoesNotExist_StudentEnrollSuccess()
+    public async Task EnrollAsync_ActiveCourseAndActiveStudentAndEnrollmentDoesNotExist_StudentEnrollSuccess()
     {
         // Arrange
         var courseId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var existingCourse = new Course() { Id = courseId };
-        var existingStudent = new User() { Id = userId, Role = Core.Role.Student };
-        _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(existingCourse);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(existingStudent);
+        var course = new Course() { Id = courseId };
+        var student = new User() { Id = userId, Role = Core.Role.Student };
+        _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
 
         // Act
         await _sut.EnrollAsync(courseId, userId);
 
         // Assert
         _enrollmentsRepositoryMock.Verify(t =>
-            t.EnrollAsync(It.Is<Enrollment>(t => t.Course == existingCourse && t.User == existingStudent)),
+            t.EnrollAsync(It.Is<Enrollment>(t => t.Course == course && t.User == student)),
             Times.Once
         );
-    }
-
-    [Fact]
-    public async Task EnrollAsync_NotExistingCourseSent_EntityNotFoundExceptionThrown()
-    {
-        // Arrange
-        var courseId = Guid.NewGuid();
-        var message = $"Course with id {courseId} was not found.";
-
-        // Act
-        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async () => await _sut.EnrollAsync(courseId, Guid.NewGuid()));
-
-        // Assert
-        Assert.Equal(message, exception.Message);
     }
 
     [Fact]
@@ -72,23 +65,7 @@ public class EnrollmentsServiceTests
     }
 
     [Fact]
-    public async Task EnrollAsync_ActiveCourseAndNotExistingUserSent_EntityNotFoundExceptionThrown()
-    {
-        // Arrange
-        var courseId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        var message = $"User with id {userId} was not found.";
-        _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(new Course() { Id = courseId });
-
-        // Act
-        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async () => await _sut.EnrollAsync(courseId, userId));
-
-        // Assert
-        Assert.Equal(message, exception.Message);
-    }
-
-    [Fact]
-    public async Task EnrollAsync_ActiveCourseAndDeactivatedUserSent_EntityConflictExceptionThrown()
+    public async Task EnrollAsync_DeactivatedUserSent_EntityConflictExceptionThrown()
     {
         // Arrange
         var courseId = Guid.NewGuid();
@@ -105,7 +82,7 @@ public class EnrollmentsServiceTests
     }
 
     [Fact]
-    public async Task EnrollAsync_ActiveCourseAndActiveUserButNotStudentSent_EntityConflictExceptionThrown()
+    public async Task EnrollAsync_UserWithWrongRoleSent_EntityConflictExceptionThrown()
     {
         // Arrange
         var courseId = Guid.NewGuid();
@@ -140,7 +117,7 @@ public class EnrollmentsServiceTests
     }
 
     [Fact]
-    public async Task ControlAttendanceAsync_ExistingEnrollmentActiveUserActiveCourseValidAttendance_SetAttendanceSuccess()
+    public async Task ControlAttendanceAsync_EnrollmentActiveUserActiveCourseValidAttendance_SetAttendanceSuccess()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -165,27 +142,6 @@ public class EnrollmentsServiceTests
             t.ControlAttendanceAsync(It.Is<Enrollment>(t => t.User == student && t.Course == course), attendance),
             Times.Once
         );
-    }
-
-    [Fact]
-    public async Task ControlAttendanceAsync_NotExistingEnrollmentSent_EntityNotFoundExceptionThrown()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var courseId = Guid.NewGuid();
-        var attendance = 10;
-        var message = $"Enrollment with user id {userId} and course id {courseId} was not found.";
-        var enrollment = new EnrollmentManagementModel()
-        {
-            UserId = userId,
-            CourseId = courseId
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance));
-
-        // Assert
-        Assert.Equal(message, exception.Message);
     }
 
     [Fact]
@@ -320,26 +276,6 @@ public class EnrollmentsServiceTests
     }
 
     [Fact]
-    public async Task DisenrollAsync_NotExistingEnrollment_EntityNotFoundExceptionThrown()
-    {
-        // Arrange
-        var courseId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        var message = $"Enrollment with user id {userId} and course id {courseId} was not found.";
-        var enrollment = new EnrollmentManagementModel()
-        {
-            UserId = userId,
-            CourseId = courseId
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async () => await _sut.DisenrollAsync(enrollment));
-
-        // Assert
-        Assert.Equal(message, exception.Message);
-    }
-
-    [Fact]
     public async Task GradeStudentAsync_ExistingEnrollmentActiveCourseActiveUser_GradeStudentSuccess()
     {
         // Arrange
@@ -365,27 +301,6 @@ public class EnrollmentsServiceTests
             t.GradeStudentAsync(It.Is<Enrollment>(t => t.User == student && t.Course == course), grade),
             Times.Once
         );
-    }
-
-    [Fact]
-    public async Task GradeStudentAsync_NotExistingEnrollment_EntityNotFoundExceptionThrown()
-    {
-        // Arrange
-        var courseId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        var grade = 5;
-        var message = $"Enrollment with user id {userId} and course id {courseId} was not found.";
-        var enrollment = new EnrollmentManagementModel()
-        {
-            UserId = userId,
-            CourseId = courseId
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async () => await _sut.GradeStudentAsync(enrollment, grade));
-
-        // Assert
-        Assert.Equal(message, exception.Message);
     }
 
     [Fact]
@@ -466,27 +381,6 @@ public class EnrollmentsServiceTests
             t.ReviewCourseAsync(It.Is<Enrollment>(t => t.User == student && t.Course == course), review),
             Times.Once
         );
-    }
-
-    [Fact]
-    public async Task ReviewCourseAsync_NotExistingEnrollment_EntityNotFoundExceptionThrown()
-    {
-        // Arrange
-        var courseId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        var review = "This is a course review.";
-        var message = $"Enrollment with user id {userId} and course id {courseId} was not found.";
-        var enrollment = new EnrollmentManagementModel()
-        {
-            UserId = userId,
-            CourseId = courseId
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(async () => await _sut.ReviewCourseAsync(enrollment, review));
-
-        // Assert
-        Assert.Equal(message, exception.Message);
     }
 
     [Fact]

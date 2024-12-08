@@ -4,29 +4,25 @@ using OnlineLearningPlatform.DAL.Interfaces;
 using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.BLL.Interfaces;
+using OnlineLearningPlatform.BLL.ServicesUtils;
 
 namespace OnlineLearningPlatform.BLL;
 
 public class EnrollmentsService(
-    IUsersRepository usersRepository,
-    ICoursesRepository coursesRepository,
-    IEnrollmentsRepository enrollmentsRepository
+    IEnrollmentsRepository enrollmentsRepository,
+    EnrollmentsUtils enrollmentsUtils,
+    UsersUtils usersUtils,
+    CoursesUtils coursesUtils
     ) : IEnrollmentsService
 {
     public async Task EnrollAsync(Guid courseId, Guid userId)
     {
-        var courseDTO = await coursesRepository.GetCourseByIdAsync(courseId);
-
-        if (courseDTO == null)
-            throw new EntityNotFoundException($"Course with id {courseId} was not found.");
+        var courseDTO = await coursesUtils.GetCourseByIdAsync(courseId);
 
         if (courseDTO.IsDeactivated)
             throw new EntityConflictException($"Course with id {courseId} is deactivated.");
 
-        var userDTO = await usersRepository.GetUserByIdAsync(userId);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {userId} was not found.");
+        var userDTO = await usersUtils.GetUserByIdAsync(userId);
 
         if (userDTO.IsDeactivated)
             throw new EntityConflictException($"User with id {userId} is deactivated.");
@@ -50,10 +46,7 @@ public class EnrollmentsService(
 
     public async Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance)
     {
-        var enrollmentDTO = await enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
-
-        if (enrollmentDTO == null)
-            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+        var enrollmentDTO = await enrollmentsUtils.GetEnrollmentAsync(enrollment.CourseId, enrollment.UserId);
 
         if (enrollmentDTO.User.IsDeactivated)
             throw new EntityConflictException($"User with id {enrollment.UserId} is deactivated.");
@@ -71,20 +64,14 @@ public class EnrollmentsService(
 
     public async Task DisenrollAsync(EnrollmentManagementModel enrollment)
     {
-        var enrollmentDTO = await enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
-
-        if (enrollmentDTO == null)
-            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+        var enrollmentDTO = await enrollmentsUtils.GetEnrollmentAsync(enrollment.CourseId, enrollment.UserId);
 
         await enrollmentsRepository.DisenrollAsync(enrollmentDTO);
     }
 
     public async Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade)
     {
-        var enrollmentDTO = await enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
-
-        if (enrollmentDTO == null)
-            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+        var enrollmentDTO = await enrollmentsUtils.GetEnrollmentAsync(enrollment.CourseId, enrollment.UserId);
 
         if (enrollmentDTO.User.IsDeactivated)
             throw new EntityConflictException($"User with id {enrollment.UserId} is deactivated.");
@@ -97,10 +84,7 @@ public class EnrollmentsService(
 
     public async Task ReviewCourseAsync(EnrollmentManagementModel enrollment, string review)
     {
-        var enrollmentDTO = await enrollmentsRepository.GetEnrollmentByIdAsync(enrollment.CourseId, enrollment.UserId);
-
-        if (enrollmentDTO == null)
-            throw new EntityNotFoundException($"Enrollment with user id {enrollment.UserId} and course id {enrollment.CourseId} was not found.");
+        var enrollmentDTO = await enrollmentsUtils.GetEnrollmentAsync(enrollment.CourseId, enrollment.UserId);
 
         if (enrollmentDTO.User.IsDeactivated)
             throw new EntityConflictException($"User with id {enrollment.UserId} is deactivated.");
