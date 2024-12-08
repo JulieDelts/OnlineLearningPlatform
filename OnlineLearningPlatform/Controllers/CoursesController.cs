@@ -58,7 +58,7 @@ public class CoursesController(
     [HttpGet("{id}")]
     public async Task<ActionResult<ExtendedCourseResponse>> GetCourseByIdAsync([FromRoute] Guid id)
     {
-        var courseModel = await coursesService.GetCourseByIdAsync(id);
+        var courseModel = await coursesService.GetFullCourseByIdAsync(id);
 
         var course = mapper.Map<ExtendedCourseResponse>(courseModel);
 
