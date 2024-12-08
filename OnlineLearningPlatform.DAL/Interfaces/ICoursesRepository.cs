@@ -12,9 +12,9 @@ public interface ICoursesRepository
 
     Task<List<Course>> GetAllActiveCoursesAsync();
 
-    Task<Course> GetCourseByIdWithFullInfoAsync(Guid id);
+    Task<Course?> GetCourseByIdWithFullInfoAsync(Guid id);
 
-    Task<Course> GetCourseByIdAsync(Guid id);
+    Task<Course?> GetCourseByIdAsync(Guid id);
 
     Task UpdateCourseAsync(Course course, Course courseUpdate);
 }

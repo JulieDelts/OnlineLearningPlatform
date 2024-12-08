@@ -12,10 +12,12 @@ public class EnrollmentsRepository(OnlineLearningPlatformContext context) : IEnr
         await context.SaveChangesAsync();
     }
 
-    public async Task<Enrollment> GetEnrollmentByIdAsync(Guid courseId, Guid userId)
-    {
-        return await context.Enrollments.Where(en => en.User.Id == userId && en.Course.Id == courseId).Include(en => en.Course).Include(en => en.User).SingleOrDefaultAsync();
-    }
+    public async Task<Enrollment?> GetEnrollmentByIdAsync(Guid courseId, Guid userId) =>
+        await context.Enrollments
+        .Include(en => en.Course)
+        .Include(en => en.User)
+        .SingleOrDefaultAsync(en => en.User.Id == userId && en.Course.Id == courseId);
+
 
     public async Task ReviewCourseAsync(Enrollment enrollment, string review)
     {
