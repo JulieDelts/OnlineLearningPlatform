@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineLearningPlatform.BLL"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{97AF85E6-3187-4448-906B-3AA17E702542}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4DD7AFC0-BAA4-4F15-91E0-D3CE0EA4467A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineLearningPlatform.BLL.Tests", "OnlineLearningPlatform.BLL.Tests\OnlineLearningPlatform.BLL.Tests.csproj", "{8B7CED98-C4D4-49D3-9FBE-E677DCCB553E}"
 EndProject
 Global

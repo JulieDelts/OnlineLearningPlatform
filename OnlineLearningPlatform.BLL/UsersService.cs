@@ -64,10 +64,7 @@ public class UsersService(
 
     public async Task<List<CourseModel>> GetTaughtCoursesByUserIdAsync(Guid id)
     {
-        var user = await usersRepository.GetUserByIdWithFullInfoAsync(id);
-
-        if (user == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        var user = await usersUtils.GetUserFullInfoByIdAsync(id);
 
         if (user.Role != Role.Teacher)
             throw new EntityConflictException("The role of the user is not correct.");
@@ -79,10 +76,7 @@ public class UsersService(
 
     public async Task<List<CourseEnrollmentModel>> GetEnrollmentsByUserIdAsync(Guid id)
     {
-        var userDTO = await usersRepository.GetUserByIdWithFullInfoAsync(id);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        var userDTO = await usersUtils.GetUserFullInfoByIdAsync(id);
 
         if (userDTO.Role != Role.Student)
             throw new EntityConflictException("The role of the user is not correct.");
@@ -94,10 +88,7 @@ public class UsersService(
 
     public async Task<ExtendedUserModel> GetUserByIdAsync(Guid id)
     {
-        var userDTO = await usersRepository.GetUserByIdWithFullInfoAsync(id);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found");
+        var userDTO = await usersUtils.GetUserFullInfoByIdAsync(id);
 
         var user = mapper.Map<ExtendedUserModel>(userDTO);
 
@@ -137,10 +128,7 @@ public class UsersService(
 
     public async Task UpdateRoleAsync(Guid id, Role role)
     {
-        var userDTO = await usersRepository.GetUserByIdWithFullInfoAsync(id);
-
-        if (userDTO == null)
-            throw new EntityNotFoundException($"User with id {id} was not found.");
+        var userDTO = await usersUtils.GetUserFullInfoByIdAsync(id);
 
         if (userDTO.IsDeactivated)
             throw new EntityConflictException($"User with id {id} is deactivated.");
