@@ -8,7 +8,7 @@ public interface ICoursesService
 
     Task<List<CourseModel>> GetAllActiveCoursesAsync();
 
-    Task<ExtendedCourseModel> GetCourseByIdAsync(Guid id);
+    Task<ExtendedCourseModel> GetFullCourseByIdAsync(Guid id);
 
     Task UpdateCourseAsync(Guid id, UpdateCourseModel course);
 

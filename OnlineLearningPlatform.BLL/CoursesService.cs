@@ -50,7 +50,7 @@ public class CoursesService(
         var courseDTO = await coursesRepository.GetCourseByIdWithFullInfoAsync(id);
 
         if (courseDTO == null)
-            throw new EntityNotFoundException($"Course with id {id} was not found");
+            throw new EntityNotFoundException($"Course with id {id} was not found.");
 
         var enrollmentDTOs = courseDTO.Enrollments.ToList();
 
@@ -59,7 +59,7 @@ public class CoursesService(
         return userEnrollments;
     }
 
-    public async Task<ExtendedCourseModel> GetCourseByIdAsync(Guid id)
+    public async Task<ExtendedCourseModel> GetFullCourseByIdAsync(Guid id)
     {
         var courseDTO = await coursesRepository.GetCourseByIdWithFullInfoAsync(id);
 
