@@ -5,6 +5,7 @@ using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.BLL.Exceptions;
 using OnlineLearningPlatform.BLL.Mappings;
 using OnlineLearningPlatform.BLL.ServicesUtils;
+using OnlineLearningPlatform.BLL.Tests.TestCases;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
@@ -73,32 +74,16 @@ public class UsersServiceTests
         Assert.Equal(message, exception.Message);
     }
 
-    [Fact]
-    public void RegisterAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(UsersServiceTestCases.UserToRegister), MemberType = typeof(UsersServiceTestCases))]
+    public void RegisterAsync_ValidModel_MappingSuccess( UserRegistrationModel userModel)
     {
-        // Arrange
-        var userModel = new UserRegistrationModel()
-        {
-            FirstName = "John",
-            LastName = "Doe",
-            Login = "JohnDoeTest",
-            Password = "Password",
-            Email = "JohnDoeTest@gmail.com",
-            Phone = "89121234567"
-        };
-
         //Act 
         var user = _mapper.Map<User>(userModel);
 
         //Assert
+        user.Should().BeEquivalentTo(userModel, options => options.ExcludingMissingMembers());
         Assert.Equal(user.Id, Guid.Empty);
-        Assert.Equal(userModel.FirstName, user.FirstName);
-        Assert.Equal(userModel.LastName, user.LastName);
-        Assert.Equal(userModel.Login, user.Login);
-        Assert.Equal(userModel.Password, user.Password);
-        Assert.Equal(userModel.Email, user.Email);
-        Assert.Equal(userModel.Phone, user.Phone);
-        Assert.Equal(Core.Role.Student, user.Role);
         Assert.False(user.IsDeactivated);
         Assert.Empty(user.TaughtCourses);
         Assert.Empty(user.Enrollments);
@@ -150,22 +135,15 @@ public class UsersServiceTests
         );
     }
 
-    [Fact]
-    public void GetAllActiveUsersAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(UsersServiceTestCases.ActiveUsers), MemberType = typeof(UsersServiceTestCases))]
+    public void GetAllActiveUsersAsync_ValidModel_MappingSuccess(List<User> userDTOs)
     {
-        // Arrange
-        var usersDTOs = new List<User>()
-        {
-            new User { FirstName = "FirstTestName1", LastName = "LastTestName1", Email = "TestEmail1" },
-            new User { FirstName = "FirstTestName2", LastName = "LastTestName2", Email = "TestEmail2" },
-            new User { FirstName = "FirstTestName3", LastName = "LastTestName3", Email = "TestEmail3" },
-        };
-
         //Act
-        var courses = _mapper.Map<List<UserModel>>(usersDTOs);
+        var courses = _mapper.Map<List<UserModel>>(userDTOs);
 
         //Assert
-        courses.Should().BeEquivalentTo(usersDTOs, options => options.ExcludingMissingMembers());
+        courses.Should().BeEquivalentTo(userDTOs, options => options.ExcludingMissingMembers());
     }
 
     [Fact]
@@ -182,16 +160,10 @@ public class UsersServiceTests
         Assert.Equal(message, exception.Message);
     }
 
-    [Fact]
-    public void GetTaughtCoursesByUserIdAsync_ValidModel_MappingSuccess()
-    {
-        // Arrange
-        var courseDTOs = new List<Course>()
-        {
-            new Course { Name = "TestCourse1", Description = "This is the first test course." },
-            new Course { Name = "TestCourse2", Description = "This is the second test course." }
-        };
-
+    [Theory]
+    [MemberData(nameof(UsersServiceTestCases.UserTaughtCourses), MemberType = typeof(UsersServiceTestCases))]
+    public void GetTaughtCoursesByUserIdAsync_ValidModel_MappingSuccess(List<Course> courseDTOs)
+    { 
         //Act
         var courses = _mapper.Map<List<CourseModel>>(courseDTOs);
 
@@ -213,36 +185,10 @@ public class UsersServiceTests
         Assert.Equal(message, exception.Message);
     }
 
-    [Fact]
-    public void GetEnrollmentsByUserIdAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(UsersServiceTestCases.UserEnrollments), MemberType = typeof(UsersServiceTestCases))]
+    public void GetEnrollmentsByUserIdAsync_ValidModel_MappingSuccess(List<Enrollment> enrollmentDTOs)
     {
-        // Arrange
-        var enrollmentDTOs = new List<Enrollment>()
-        {
-            new Enrollment 
-            { 
-                Attendance = 10,
-                Grade = 5,
-                StudentReview = "TestReview1",
-                Course = new Course()
-                {
-                    Name = "TestCourse1",
-                    Description = "This is the first test course description."
-                }
-            },
-            new Enrollment
-            {
-                Attendance = 12,
-                Grade = 6,
-                StudentReview = null,
-                Course = new Course()
-                {
-                    Name = "TestCourse2",
-                    Description = "This is the second test course description."
-                }
-            },
-        };
-
         //Act
         var courses = _mapper.Map<List<CourseEnrollmentModel>>(enrollmentDTOs);
 
@@ -250,21 +196,10 @@ public class UsersServiceTests
         courses.Should().BeEquivalentTo(enrollmentDTOs, options => options.ExcludingMissingMembers());
     }
 
-    [Fact]
-    public void GetUserByIdAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(UsersServiceTestCases.UserFullInfo), MemberType = typeof(UsersServiceTestCases))]
+    public void GetUserByIdAsync_ValidModel_MappingSuccess(User userDTO)
     {
-        //Arrange
-        var userDTO = new User()
-        {
-            Id = Guid.NewGuid(),
-            FirstName = "TestFirstName",
-            LastName = "TestSecondName",
-            Email = "EmailTest",
-            Phone = "78901234567",
-            Role = Role.Admin,
-            IsDeactivated = false
-        };
-
         //Act
         var user = _mapper.Map<ExtendedUserModel>(userDTO);
 
@@ -372,28 +307,16 @@ public class UsersServiceTests
         Assert.Equal(message, exception.Message);
     }
 
-    [Fact]
-    public void UpdateProfileAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(UsersServiceTestCases.UserToUpdate), MemberType = typeof(UsersServiceTestCases))]
+    public void UpdateProfileAsync_ValidModel_MappingSuccess(UpdateUserProfileModel userProfileModel)
     {
-        // Arrange
-        var userProfileModel = new UpdateUserProfileModel()
-        {
-            FirstName = "John",
-            LastName = "Doe",
-            Email = "JohnDoeTest@gmail.com",
-            Phone = "89121234567"
-        };
-
         //Act 
         var user = _mapper.Map<User>(userProfileModel);
 
         //Assert
+        user.Should().BeEquivalentTo(userProfileModel, options => options.ExcludingMissingMembers());
         Assert.Equal(user.Id, Guid.Empty);
-        Assert.Equal(userProfileModel.FirstName, user.FirstName);
-        Assert.Equal(userProfileModel.LastName, user.LastName);
-        Assert.Equal(userProfileModel.Email, user.Email);
-        Assert.Equal(userProfileModel.Phone, user.Phone);
-        Assert.Equal(Role.Student, user.Role);
         Assert.False(user.IsDeactivated);
         Assert.Empty(user.TaughtCourses);
         Assert.Empty(user.Enrollments);

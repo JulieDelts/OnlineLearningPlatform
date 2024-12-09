@@ -6,6 +6,7 @@ using OnlineLearningPlatform.BLL.BusinessModels;
 using OnlineLearningPlatform.BLL.Exceptions;
 using OnlineLearningPlatform.BLL.Mappings;
 using OnlineLearningPlatform.BLL.ServicesUtils;
+using OnlineLearningPlatform.BLL.Tests.TestCases;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
@@ -57,27 +58,16 @@ public class CoursesServiceTests
         );
     }
 
-    [Fact]
-    public void CreateCourseAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(CoursesServiceTestCases.CourseToCreate), MemberType = typeof(CoursesServiceTestCases))]
+    public void CreateCourseAsync_ValidModel_MappingSuccess(CreateCourseModel courseModel)
     {
-        // Arrange
-        var courseModel = new CreateCourseModel()
-        {
-            Name = "TestCourse",
-            Description = "This is a test course.",
-            NumberOfLessons = 10,
-            TeacherId = Guid.NewGuid()
-        };
-
         //Act 
         var course = _mapper.Map<Course>(courseModel);
 
         //Assert
+        course.Should().BeEquivalentTo(courseModel, options => options.ExcludingMissingMembers());
         Assert.Equal(course.Id, Guid.Empty);
-        Assert.Equal(courseModel.Name, course.Name);
-        Assert.Equal(courseModel.Description, course.Description);
-        Assert.Equal(courseModel.TeacherId, course.TeacherId);
-        Assert.Equal(courseModel.NumberOfLessons, course.NumberOfLessons);
         Assert.False(course.IsDeactivated);
         Assert.Null(course.Teacher);
         Assert.Empty(course.Enrollments);
@@ -129,18 +119,10 @@ public class CoursesServiceTests
         );
     }
 
-    [Fact]
-    public void GetAllActiveCoursesAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(CoursesServiceTestCases.ActiveCourses), MemberType = typeof(CoursesServiceTestCases))]
+    public void GetAllActiveCoursesAsync_ValidModel_MappingSuccess(List<Course> courseDTOs)
     {
-        // Arrange
-        var courseDTOs = new List<Course>()
-        {
-            new Course { Name = "FirstTestCourse", Description = "This is the first test course." },
-            new Course { Name = "SecondTestCourse", Description = "This is the second test course." },
-            new Course { Name = "ThirdTestCourse", Description = "This is the third test course." },
-            new Course { Name = "FourthTestCourse", Description = "This is the fourth test course." }
-        };
-
         //Act
         var courses = _mapper.Map<List<CourseModel>>(courseDTOs);
 
@@ -166,36 +148,10 @@ public class CoursesServiceTests
         );
     }
 
-    [Fact]
-    public void GetEnrollmentsByCourseIdAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(CoursesServiceTestCases.EnrollmentsByCourseId), MemberType = typeof(CoursesServiceTestCases))]
+    public void GetEnrollmentsByCourseIdAsync_ValidModel_MappingSuccess(List<Enrollment> enrollmentDTOs)
     {
-        // Arrange
-        var enrollmentDTOs = new List<Enrollment>()
-        {
-            new Enrollment()
-            {
-                User = new User()
-                {
-                    FirstName = "John",
-                    LastName = "Doe",
-                    Email = "test1@gmail.com"
-                },
-                Attendance = 1,
-                Grade = null
-            },
-            new Enrollment()
-            {
-                User = new User()
-                {
-                    FirstName = "Kate",
-                    LastName = "Beck",
-                    Email = "test2@gmail.com"
-                },
-                Attendance = null,
-                Grade = 5
-            }
-        };
-
         //Act
         var userEnrollments = _mapper.Map<List<UserEnrollmentModel>>(enrollmentDTOs);
 
@@ -235,26 +191,10 @@ public class CoursesServiceTests
         );
     }
 
-    [Fact]
-    public void GetFullCourseByIdAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(CoursesServiceTestCases.CourseWithFullInfo), MemberType = typeof(CoursesServiceTestCases))]
+    public void GetFullCourseByIdAsync_ValidModel_MappingSuccess(Course courseDTO)
     {
-        // Arrange
-        var courseDTO = new Course()
-        {
-            Id = Guid.NewGuid(),
-            Name = "TestCourse",
-            Description = "This is a test course.",
-            NumberOfLessons = 20,
-            TeacherId = Guid.NewGuid(),
-            IsDeactivated = false,
-            Teacher = new User()
-            {
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "test1@gmail.com"
-            }
-        };
-
         //Act 
         var course = _mapper.Map<ExtendedCourseModel>(courseDTO);
 
@@ -297,26 +237,17 @@ public class CoursesServiceTests
         );
     }
 
-    [Fact]
-    public void UpdateCourseAsync_ValidModel_MappingSuccess()
+    [Theory]
+    [MemberData(nameof(CoursesServiceTestCases.CourseToUpdate), MemberType = typeof(CoursesServiceTestCases))]
+    public void UpdateCourseAsync_ValidModel_MappingSuccess(UpdateCourseModel courseModel)
     {
-        // Arrange
-        var courseModel = new UpdateCourseModel()
-        {
-            Name = "NewCourseName",
-            Description = "This is a new course description.",
-            NumberOfLessons = 10
-        };
-
         //Act 
         var course = _mapper.Map<Course>(courseModel);
 
         //Assert
+        course.Should().BeEquivalentTo(courseModel, options => options.ExcludingMissingMembers());
         Assert.Equal(course.Id, Guid.Empty);
-        Assert.Equal(courseModel.Name, course.Name);
-        Assert.Equal(courseModel.Description, course.Description);
         Assert.Equal(course.Id, Guid.Empty);
-        Assert.Equal(courseModel.NumberOfLessons, course.NumberOfLessons);
         Assert.False(course.IsDeactivated);
         Assert.Null(course.Teacher);
         Assert.Empty(course.Enrollments);
