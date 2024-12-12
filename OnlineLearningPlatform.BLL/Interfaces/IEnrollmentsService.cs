@@ -10,7 +10,7 @@ namespace OnlineLearningPlatform.BLL.Interfaces
 
         Task EnrollAsync(Guid courseId, Guid userId);
 
-        Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade);
+        Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade, Guid teacherId);
 
         Task ReviewCourseAsync(EnrollmentManagementModel enrollment, string review);
     }

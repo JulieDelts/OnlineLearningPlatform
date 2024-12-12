@@ -74,9 +74,16 @@ public class UsersController(
         return Ok(response);
     }
 
+    //[Authorize]
     [HttpPut("{id}/profile")]
     public async Task<IActionResult> UpdateUserProfileAsync([FromRoute] Guid id, [FromBody] UpdateUserProfileRequest request)
     {
+        // taken from Claim
+        // var userId = this.GetUserIdFromToken();
+        var userId = Guid.NewGuid();
+        if (id != userId)
+            return Forbid("You can update only your own profile");
+
         var profile = mapper.Map<UpdateUserProfileModel>(request);
 
         await usersService.UpdateProfileAsync(id, profile);
