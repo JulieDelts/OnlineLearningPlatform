@@ -4,7 +4,7 @@ namespace OnlineLearningPlatform.BLL.Interfaces
 {
     public interface IEnrollmentsService
     {
-        Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance);
+        Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance, Guid teacherId);
 
         Task DisenrollAsync(EnrollmentManagementModel enrollment);
 

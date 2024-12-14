@@ -31,13 +31,13 @@ internal class ExceptionMiddleware
         {
             await HandleWrongCredentialsExceptionAsync(httpContext, ex);
         }
+        catch (ClaimsRetrievalException ex)
+        {
+            await HandleClaimsRetrievalExceptionAsync(httpContext, ex);
+        }
         catch (AuthorizationFailedException ex)
         {
             await HandleAuthorizationFailedExceptionAsync(httpContext, ex);
-        }
-        catch (ArgumentException ex)
-        {
-            await HandleArgumentExceptionAsync(httpContext, ex);
         }
         catch (Exception ex)
         {
@@ -57,15 +57,15 @@ internal class ExceptionMiddleware
         await WriteErrorDetailsAsync(context, exception.Message);
     }
 
-    private async Task HandleArgumentExceptionAsync(HttpContext context, Exception exception)
-    {
-        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        await WriteErrorDetailsAsync(context, exception.Message);
-    }
-
     private async Task HandleWrongCredentialsExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        await WriteErrorDetailsAsync(context, exception.Message);
+    }
+
+    private async Task HandleClaimsRetrievalExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.Conflict;
         await WriteErrorDetailsAsync(context, exception.Message);
     }
 

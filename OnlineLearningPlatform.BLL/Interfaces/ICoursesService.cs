@@ -10,9 +10,9 @@ public interface ICoursesService
 
     Task<ExtendedCourseModel> GetFullCourseByIdAsync(Guid id);
 
-    Task UpdateCourseAsync(Guid id, UpdateCourseModel course);
-
-    Task DeactivateCourseAsync(Guid id);
+    Task UpdateCourseAsync(Guid id, UpdateCourseModel course, Guid teacherId);
+    
+    Task DeactivateCourseAsync(Guid id, Guid teacherId);
 
     Task DeleteCourseAsync(Guid id);
 

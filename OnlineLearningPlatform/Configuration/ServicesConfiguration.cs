@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using OnlineLearningPlatform.Mappings;
 using OnlineLearningPlatform.Models.Requests;
@@ -11,11 +10,7 @@ public static class ServicesConfiguration
     public static void AddAPIServices(this IServiceCollection services)
     {
         services.AddAuth();
-        services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            }); ;
+        services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddFluentValidationAutoValidation();
