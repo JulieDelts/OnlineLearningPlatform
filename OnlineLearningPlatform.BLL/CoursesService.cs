@@ -71,9 +71,12 @@ public class CoursesService(
         return course;
     }
 
-    public async Task UpdateCourseAsync(Guid id, UpdateCourseModel course)
+    public async Task UpdateCourseAsync(Guid id, UpdateCourseModel course, Guid teacherId)
     {
         var courseDTO = await coursesUtils.GetCourseByIdAsync(id);
+
+        if (teacherId != courseDTO.TeacherId)
+            throw new AuthorizationFailedException("Users are only allowed to update their own course info.");
 
         if (courseDTO.IsDeactivated)
             throw new EntityConflictException($"Course with id {id} is deactivated.");
@@ -83,9 +86,12 @@ public class CoursesService(
         await coursesRepository.UpdateCourseAsync(courseDTO, courseUpdate);
     }
 
-    public async Task DeactivateCourseAsync(Guid id)
+    public async Task DeactivateCourseAsync(Guid id, Guid teacherId)
     {
         var courseDTO = await coursesUtils.GetCourseByIdAsync(id);
+
+        if (teacherId != courseDTO.TeacherId)
+            throw new AuthorizationFailedException("Users are only allowed to deactivate their own course.");
 
         await coursesRepository.DeactivateCourseAsync(courseDTO);
     }

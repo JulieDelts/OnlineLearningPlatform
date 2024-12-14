@@ -3,7 +3,7 @@ namespace OnlineLearningPlatform.Core;
 
 public enum Role
 {
-    Student,
+    Student = 1,
     Teacher,
     Admin
 }

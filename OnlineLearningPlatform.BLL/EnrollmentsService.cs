@@ -44,9 +44,12 @@ public class EnrollmentsService(
         await enrollmentsRepository.EnrollAsync(newEnrollment);
     }
 
-    public async Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance)
+    public async Task ControlAttendanceAsync(EnrollmentManagementModel enrollment, int attendance, Guid teacherId)
     {
         var enrollmentDTO = await enrollmentsUtils.GetEnrollmentAsync(enrollment.CourseId, enrollment.UserId);
+
+        if (teacherId != enrollmentDTO.Course.TeacherId)
+            throw new AuthorizationFailedException("Users are only allowed to control attendance of students from their own course.");
 
         if (enrollmentDTO.User.IsDeactivated)
             throw new EntityConflictException($"User with id {enrollment.UserId} is deactivated.");
@@ -57,7 +60,7 @@ public class EnrollmentsService(
         var numberOfLesons = enrollmentDTO.Course.NumberOfLessons;
 
         if (attendance < 0 || attendance > numberOfLesons)
-            throw new ArgumentException("The attendance is out of the acceptable range.");
+            throw new EntityConflictException("The attendance is out of the acceptable range.");
 
         await enrollmentsRepository.ControlAttendanceAsync(enrollmentDTO, attendance);
     }
@@ -74,7 +77,7 @@ public class EnrollmentsService(
         var enrollmentDTO = await enrollmentsUtils.GetEnrollmentAsync(enrollment.CourseId, enrollment.UserId);
 
         if (teacherId != enrollmentDTO.Course.TeacherId)
-            throw new AuthorizationFailedException($"Current user can't set grades for course {enrollment.CourseId}");
+            throw new AuthorizationFailedException("Users are only allowed to grade students from their own course.");
 
         if (enrollmentDTO.User.IsDeactivated)
             throw new EntityConflictException($"User with id {enrollment.UserId} is deactivated.");

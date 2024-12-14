@@ -10,6 +10,7 @@ using OnlineLearningPlatform.BLL.Tests.TestCases;
 using OnlineLearningPlatform.Core;
 using OnlineLearningPlatform.DAL.DTOs;
 using OnlineLearningPlatform.DAL.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace OnlineLearningPlatform.BLL.Tests;
 
@@ -221,17 +222,18 @@ public class CoursesServiceTests
     {
         // Arrange
         var courseId = Guid.NewGuid();
-        var course = new Course() { Id = courseId };
+        var teacherId = Guid.NewGuid();
+        var course = new Course() { Id = courseId, TeacherId = teacherId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
         var courseUpdateModel = new UpdateCourseModel() { Name = "NewName", Description = "NewDescription" };
         var courseUpdateDTO = new Course() { Name = courseUpdateModel.Name, Description = courseUpdateModel.Description };
 
         // Act
-        await _sut.UpdateCourseAsync(courseId, courseUpdateModel);
+        await _sut.UpdateCourseAsync(courseId, courseUpdateModel, teacherId);
 
         // Assert
         _coursesRepositoryMock.Verify(t =>
-            t.UpdateCourseAsync(It.Is<Course>(t => t.Id == courseId),
+            t.UpdateCourseAsync(It.Is<Course>(t => t.Id == courseId && t.TeacherId == teacherId),
             It.Is<Course>(t => t.Name == courseUpdateDTO.Name && t.Description == courseUpdateDTO.Description)),
             Times.Once
         );
@@ -258,13 +260,32 @@ public class CoursesServiceTests
     {
         // Arrange
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid(); 
         var message = $"Course with id {courseId} is deactivated.";
-        var course = new Course() { Id = courseId, IsDeactivated = true };
+        var course = new Course() { Id = courseId, TeacherId = teacherId, IsDeactivated = true };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
         var courseUpdateModel = new UpdateCourseModel();
 
         // Act
-        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.UpdateCourseAsync(courseId, courseUpdateModel));
+        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.UpdateCourseAsync(courseId, courseUpdateModel, teacherId));
+
+        // Assert
+        Assert.Equal(message, exception.Message);
+    }
+
+    [Fact]
+    public async Task UpdateCourseAsync_InvalidTeacherId_AuthorizationFailedExceptionThrown()
+    {
+        // Arrange
+        var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
+        var message = "Users are only allowed to update their own course info.";
+        var course = new Course() { Id = courseId };
+        _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
+        var courseUpdateModel = new UpdateCourseModel();
+
+        // Act
+        var exception = await Assert.ThrowsAsync<AuthorizationFailedException>(async () => await _sut.UpdateCourseAsync(courseId, courseUpdateModel, teacherId));
 
         // Assert
         Assert.Equal(message, exception.Message);
@@ -275,17 +296,36 @@ public class CoursesServiceTests
     {
         // Arrange
         var courseId = Guid.NewGuid();
-        var course = new Course() { Id = courseId };
+        var teacherId = Guid.NewGuid();
+        var course = new Course() { Id = courseId, TeacherId = teacherId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
 
         // Act
-        await _sut.DeactivateCourseAsync(courseId);
+        await _sut.DeactivateCourseAsync(courseId, teacherId);
 
         // Assert
         _coursesRepositoryMock.Verify(t =>
-            t.DeactivateCourseAsync(It.Is<Course>(t => t.Id == courseId)),
+            t.DeactivateCourseAsync(It.Is<Course>(t => t.Id == courseId && t.TeacherId == teacherId)),
             Times.Once
         );
+    }
+
+    [Fact]
+    public async Task DeactivateCourseAsync_InvalidTeacherId_AuthorizationFailedExceptionThrown()
+    {
+        // Arrange
+        var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
+        var message = "Users are only allowed to deactivate their own course.";
+        var course = new Course() { Id = courseId };
+        _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
+        var courseUpdateModel = new UpdateCourseModel();
+
+        // Act
+        var exception = await Assert.ThrowsAsync<AuthorizationFailedException>(async () => await _sut.DeactivateCourseAsync(courseId, teacherId));
+
+        // Assert
+        Assert.Equal(message, exception.Message);
     }
 
     [Fact]

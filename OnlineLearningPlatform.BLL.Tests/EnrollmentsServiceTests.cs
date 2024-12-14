@@ -120,22 +120,23 @@ public class EnrollmentsServiceTests
     public async Task ControlAttendanceAsync_EnrollmentActiveUserActiveCourseValidAttendance_SetAttendanceSuccess()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();    
         var attendance = 9;
-        var course = new Course() { Id = courseId, NumberOfLessons = 10 };
-        var student = new User() { Id = userId };
+        var course = new Course() { Id = courseId, TeacherId = teacherId, NumberOfLessons = 10 };
+        var student = new User() { Id = studentId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        await _sut.ControlAttendanceAsync(enrollment, attendance);
+        await _sut.ControlAttendanceAsync(enrollment, attendance, teacherId);
 
         // Assert
         _enrollmentsRepositoryMock.Verify(t =>
@@ -148,23 +149,24 @@ public class EnrollmentsServiceTests
     public async Task ControlAttendanceAsync_DeactivatedCourseSent_EntityConflictExceptionThrown()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
         var attendance = 10;
         var message = $"Course with id {courseId} is deactivated.";
-        var course = new Course() { Id = courseId, IsDeactivated = true };
-        var student = new User() { Id = userId };
+        var course = new Course() { Id = courseId, TeacherId = teacherId, IsDeactivated = true };
+        var student = new User() { Id = studentId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance));
+        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance, teacherId));
 
         // Assert
         Assert.Equal(message, exception.Message);
@@ -174,49 +176,51 @@ public class EnrollmentsServiceTests
     public async Task ControlAttendanceAsync_DeactivatedUserSent_EntityConflictExceptionThrown()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
         var attendance = 10;
-        var message = $"User with id {userId} is deactivated.";
-        var course = new Course() { Id = courseId };
-        var student = new User() { Id = userId, IsDeactivated = true };
+        var message = $"User with id {studentId} is deactivated.";
+        var course = new Course() { Id = courseId, TeacherId = teacherId };
+        var student = new User() { Id = studentId, IsDeactivated = true };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance));
+        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance, teacherId));
 
         // Assert
         Assert.Equal(message, exception.Message);
     }
 
     [Fact]
-    public async Task ControlAttendanceAsync_AttendanceLessThanZero_ArgumentExceptionThrown()
+    public async Task ControlAttendanceAsync_AttendanceLessThanZero_EntityConflictExceptionThrown()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
         var attendance = -10;
         var message = "The attendance is out of the acceptable range.";
-        var course = new Course() { Id = courseId, NumberOfLessons = 10 };
-        var student = new User() { Id = userId };
+        var course = new Course() { Id = courseId, TeacherId = teacherId, NumberOfLessons = 10 };
+        var student = new User() { Id = studentId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance));
+        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance, teacherId));
 
         // Assert
         Assert.Equal(message, exception.Message);
@@ -226,23 +230,52 @@ public class EnrollmentsServiceTests
     public async Task ControlAttendanceAsync_AttendanceGreaterThanNumberOfLessons_ArgumentExceptionThrown()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
         var attendance = 20;
         var message = "The attendance is out of the acceptable range.";
-        var course = new Course() { Id = courseId, NumberOfLessons = 10 };
-        var student = new User() { Id = userId };
+        var course = new Course() { Id = courseId, TeacherId = teacherId, NumberOfLessons = 10 };
+        var student = new User() { Id = studentId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        var exception = await Assert.ThrowsAsync<ArgumentException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance));
+        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance, teacherId));
+
+        // Assert
+        Assert.Equal(message, exception.Message);
+    }
+
+
+    [Fact]
+    public async Task ControlAttendanceAsync_InvalidTeacherId_AuthorizationFailedExceptionThrown()
+    {
+        // Arrange
+        var studentId = Guid.NewGuid();
+        var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
+        var attendance = 20;
+        var message = "Users are only allowed to control attendance of students from their own course.";
+        var course = new Course() { Id = courseId };
+        var student = new User() { Id = studentId };
+        _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        var enrollment = new EnrollmentManagementModel()
+        {
+            UserId = studentId,
+            CourseId = courseId
+        };
+
+        // Act
+        var exception = await Assert.ThrowsAsync<AuthorizationFailedException>(async () => await _sut.ControlAttendanceAsync(enrollment, attendance, teacherId));
 
         // Assert
         Assert.Equal(message, exception.Message);
@@ -279,22 +312,23 @@ public class EnrollmentsServiceTests
     public async Task GradeStudentAsync_ExistingEnrollmentActiveCourseActiveUser_GradeStudentSuccess()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
         var grade = 5;
-        var course = new Course() { Id = courseId };
-        var student = new User() { Id = userId };
+        var course = new Course() { Id = courseId, TeacherId = teacherId };
+        var student = new User() { Id = studentId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        await _sut.GradeStudentAsync(enrollment, grade);
+        await _sut.GradeStudentAsync(enrollment, grade, teacherId);
 
         // Assert
         _enrollmentsRepositoryMock.Verify(t =>
@@ -307,23 +341,24 @@ public class EnrollmentsServiceTests
     public async Task GradeStudentAsync_DeactivatedCourseSent_EntityConflictExceptionThrown()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
         var grade = 5;
         var message = $"Course with id {courseId} is deactivated.";
-        var course = new Course() { Id = courseId, IsDeactivated = true };
-        var student = new User() { Id = userId };
+        var course = new Course() { Id = courseId, TeacherId = teacherId, IsDeactivated = true };
+        var student = new User() { Id = studentId };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.GradeStudentAsync(enrollment, grade));
+        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.GradeStudentAsync(enrollment, grade, teacherId));
 
         // Assert
         Assert.Equal(message, exception.Message);
@@ -333,23 +368,51 @@ public class EnrollmentsServiceTests
     public async Task GradeStudentAsync_DeactivatedUserSent_EntityConflictExceptionThrown()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var studentId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
         var grade = 5;
-        var message = $"User with id {userId} is deactivated.";
-        var course = new Course() { Id = courseId };
-        var student = new User() { Id = userId, IsDeactivated = true };
+        var message = $"User with id {studentId} is deactivated.";
+        var course = new Course() { Id = courseId, TeacherId = teacherId };
+        var student = new User() { Id = studentId, IsDeactivated = true };
         _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
-        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(userId)).ReturnsAsync(student);
-        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, userId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
         var enrollment = new EnrollmentManagementModel()
         {
-            UserId = userId,
+            UserId = studentId,
             CourseId = courseId
         };
 
         // Act
-        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.GradeStudentAsync(enrollment, grade));
+        var exception = await Assert.ThrowsAsync<EntityConflictException>(async () => await _sut.GradeStudentAsync(enrollment, grade, teacherId));
+
+        // Assert
+        Assert.Equal(message, exception.Message);
+    }
+
+    [Fact]
+    public async Task GradeStudentAsync_InvalidTeacherId_AuthorizationFailedExceptionThrown()
+    {
+        // Arrange
+        var studentId = Guid.NewGuid();
+        var courseId = Guid.NewGuid();
+        var teacherId = Guid.NewGuid();
+        var grade = 5;
+        var message = "Users are only allowed to grade students from their own course.";
+        var course = new Course() { Id = courseId };
+        var student = new User() { Id = studentId };
+        _coursesRepositoryMock.Setup(t => t.GetCourseByIdAsync(courseId)).ReturnsAsync(course);
+        _usersRepositoryMock.Setup(t => t.GetUserByIdAsync(studentId)).ReturnsAsync(student);
+        _enrollmentsRepositoryMock.Setup(t => t.GetEnrollmentByIdAsync(courseId, studentId)).ReturnsAsync(new Enrollment() { User = student, Course = course });
+        var enrollment = new EnrollmentManagementModel()
+        {
+            UserId = studentId,
+            CourseId = courseId
+        };
+
+        // Act
+        var exception = await Assert.ThrowsAsync<AuthorizationFailedException>(async () => await _sut.GradeStudentAsync(enrollment, grade, teacherId));
 
         // Assert
         Assert.Equal(message, exception.Message);
