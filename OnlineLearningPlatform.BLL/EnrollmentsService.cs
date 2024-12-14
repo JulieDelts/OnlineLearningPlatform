@@ -69,9 +69,12 @@ public class EnrollmentsService(
         await enrollmentsRepository.DisenrollAsync(enrollmentDTO);
     }
 
-    public async Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade)
+    public async Task GradeStudentAsync(EnrollmentManagementModel enrollment, int grade, Guid teacherId)
     {
         var enrollmentDTO = await enrollmentsUtils.GetEnrollmentAsync(enrollment.CourseId, enrollment.UserId);
+
+        if (teacherId != enrollmentDTO.Course.TeacherId)
+            throw new AuthorizationFailedException($"Current user can't set grades for course {enrollment.CourseId}");
 
         if (enrollmentDTO.User.IsDeactivated)
             throw new EntityConflictException($"User with id {enrollment.UserId} is deactivated.");

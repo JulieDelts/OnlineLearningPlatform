@@ -16,6 +16,7 @@ internal class ExceptionMiddleware
     {
         try
         {
+            httpContext.Response.ContentType = "application/json";
             await _next(httpContext);
         }
         catch (EntityNotFoundException ex)
@@ -30,6 +31,10 @@ internal class ExceptionMiddleware
         {
             await HandleWrongCredentialsExceptionAsync(httpContext, ex);
         }
+        catch (AuthorizationFailedException ex)
+        {
+            await HandleAuthorizationFailedExceptionAsync(httpContext, ex);
+        }
         catch (ArgumentException ex)
         {
             await HandleArgumentExceptionAsync(httpContext, ex);
@@ -42,56 +47,46 @@ internal class ExceptionMiddleware
 
     private async Task HandleEntityNotFoundExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-        await context.Response.WriteAsync(new ErrorDetails()
-        {
-            StatusCode = context.Response.StatusCode,
-            Message = exception.Message
-        }.ToString());
+        await WriteErrorDetailsAsync(context, exception.Message);
     }
 
     private async Task HandleEntityConflictExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.Conflict;
-        await context.Response.WriteAsync(new ErrorDetails()
-        {
-            StatusCode = context.Response.StatusCode,
-            Message = exception.Message
-        }.ToString());
+        await WriteErrorDetailsAsync(context, exception.Message);
     }
 
     private async Task HandleArgumentExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        await context.Response.WriteAsync(new ErrorDetails()
-        {
-            StatusCode = context.Response.StatusCode,
-            Message = exception.Message
-        }.ToString());
+        await WriteErrorDetailsAsync(context, exception.Message);
     }
 
     private async Task HandleWrongCredentialsExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-        await context.Response.WriteAsync(new ErrorDetails()
-        {
-            StatusCode = context.Response.StatusCode,
-            Message = exception.Message
-        }.ToString());
+        await WriteErrorDetailsAsync(context, exception.Message);
+    }
+
+    private async Task HandleAuthorizationFailedExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+        await WriteErrorDetailsAsync(context, exception.Message);
     }
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        await WriteErrorDetailsAsync(context, "Бэкендер обосрался!");
+    }
+
+    private async Task WriteErrorDetailsAsync(HttpContext context, string message)
+    {
         await context.Response.WriteAsync(new ErrorDetails()
         {
             StatusCode = context.Response.StatusCode,
-            Message = "Бэкендер обосрался!"
+            Message = message
         }.ToString());
     }
 }

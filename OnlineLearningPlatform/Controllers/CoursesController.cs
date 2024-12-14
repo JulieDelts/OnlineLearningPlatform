@@ -75,6 +75,7 @@ public class CoursesController(
         return NoContent();
     }
 
+    //[CustomAuthorize([UserRole.Teacher])]
     [HttpPatch("{id}/grade")]
     public async Task<IActionResult> GradeStudentAsync([FromRoute] Guid id, [FromBody] GradeStudentRequest request)
     {
@@ -84,7 +85,10 @@ public class CoursesController(
             UserId = request.UserId
         };
 
-        await enrollmentsService.GradeStudentAsync(enrollment, request.Grade);
+        // taken from Claim
+        var teacherId = Guid.NewGuid();
+
+        await enrollmentsService.GradeStudentAsync(enrollment, request.Grade, teacherId);
 
         return NoContent();
     }
